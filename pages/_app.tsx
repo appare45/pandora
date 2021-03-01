@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import type { AppProps /*, AppContext */ } from 'next/app';
 import '../styles/globals.css';
-import { AuthProvider } from './context/Auth';
+import { AuthProvider } from '../context/Auth';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

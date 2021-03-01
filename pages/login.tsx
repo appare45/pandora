@@ -1,13 +1,14 @@
 import { useContext, useEffect } from 'react';
 import firebase from '../utils/firebase';
-import { AuthContext } from './context/Auth';
+import router from 'next/router';
+import { AuthContext } from '../context/Auth';
 
 export default function LoginFront() {
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log(currentUser)
-  },[currentUser])
+    !!currentUser && router.push('/')
+  }, [currentUser]);
 
   const login = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -15,7 +16,7 @@ export default function LoginFront() {
   };
 
   const logout = () => {
-    if(!!currentUser) {
+    if (!!currentUser) {
       firebase.auth().signOut();
     }
   };
@@ -33,9 +34,9 @@ export default function LoginFront() {
       >
         ログアウト
       </button>
-      {
-        !!currentUser ? `ログイン中のユーザー：${currentUser.displayName}` : 'ログインしていない'
-      }
+      {!!currentUser
+        ? `ログイン中のユーザー：${currentUser.displayName}`
+        : 'ログインしていない'}
       <p></p>
     </>
   );

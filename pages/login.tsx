@@ -13,6 +13,7 @@ export default function LoginFront() {
 
   const login = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().languageCode = 'ja'
     firebase.auth().signInWithRedirect(provider);
   };
 

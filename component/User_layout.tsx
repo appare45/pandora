@@ -5,7 +5,7 @@ import { AuthContext } from './../context/Auth';
 import { useContext, useEffect, useState } from 'react';
 
 const Children = React.memo((props: { children }) => {
-  return <main>{props.children}</main>;
+  return <main className="px-5">{props.children}</main>;
 });
 
 export default function User_layout({ children }) {
@@ -72,7 +72,7 @@ export default function User_layout({ children }) {
                 className="h-full w-full rounded-full"
               />
             </figure>
-            <div>
+            <div className="mx-1">
               <p>{!!currentUser && currentUser.displayName}</p>
               <button onClick={() => logout()}>ログアウト</button>
             </div>

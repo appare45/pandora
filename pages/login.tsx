@@ -7,7 +7,8 @@ export default function LoginFront() {
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    !!currentUser && router.push('/')
+    !!currentUser && router.push('/');
+    console.log(currentUser);
   }, [currentUser]);
 
   const login = () => {
@@ -23,8 +24,9 @@ export default function LoginFront() {
   return (
     <>
       <button
-        className="bg-blue-300 p-2 rounded shadow m-2"
+        className="bg-blue-300 p-2 rounded shadow m-2 disabled:opacity-50"
         onClick={() => login()}
+        disabled={currentUser === undefined}
       >
         ログイン
       </button>

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import firebase from '../utils/firebase';
 import router from 'next/router';
 import { AuthContext } from '../context/Auth';
@@ -9,33 +9,27 @@ export default function LoginFront() {
   useEffect(() => {
     !!currentUser && router.push('/');
     console.log(currentUser);
+    setLoginStatus(currentUser);
   }, [currentUser]);
 
   const login = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().languageCode = 'ja'
+    firebase.auth().languageCode = 'ja';
     firebase.auth().signInWithRedirect(provider);
   };
 
-  const logout = () => {
-    if (!!currentUser) {
-      firebase.auth().signOut();
-    }
-  };
+  const [loginStatus, setLoginStatus] = useState<
+    firebase.User | null | undefined
+  >(undefined);
+
   return (
     <>
       <button
-        className="bg-blue-300 p-2 rounded shadow m-2 disabled:opacity-50"
+        className={`bg-blue-300 p-2 rounded shadow m-2 disabled:opacity-50 ${loginStatus==undefined && "bg-red-100"}`}
         onClick={() => login()}
         disabled={currentUser === undefined}
       >
         ログイン
-      </button>
-      <button
-        className="bg-blue-300 p-2 rounded shadow m-2"
-        onClick={() => logout()}
-      >
-        ログアウト
       </button>
       {!!currentUser
         ? `ログイン中のユーザー：${currentUser.displayName}`

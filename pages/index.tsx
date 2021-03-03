@@ -1,5 +1,5 @@
 import User_layout from '../components/User_layout';
-import { AuthContext, AuthProvider } from '../context/Auth';
+import { AuthContext, AuthProvider } from '../contexts/Auth';
 
 export function AddEvent() {
   function addEventToDb () {

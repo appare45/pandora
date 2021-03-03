@@ -1,12 +1,10 @@
 import React from 'react';
 import firebase from '../utils/firebase';
 import router from 'next/router';
-import { AuthContext } from '../context/Auth';
+import { AuthContext } from '../contexts/Auth';
+import { WrapperProvider } from './../contexts/Wrapper';
+import Wrapper from './../components/Wrapper';
 import { useContext, useEffect, useState } from 'react';
-
-// const Children = React.memo((props: { children }) => {
-//   return <main className="px-5">{props.children}</main>;
-// });
 
 export default function User_layout({ children }) {
   // メモ化されたヘッダー
@@ -85,7 +83,9 @@ export default function User_layout({ children }) {
   return (
     <>
       <Header />
-      <main className="px-5">{children}</main>
+      <WrapperProvider>
+        <main className="px-5">{children}</main>
+      </WrapperProvider>
     </>
   );
 }

@@ -1,28 +1,28 @@
 import React from 'react';
 import firebase from '../utils/firebase';
 import router from 'next/router';
-import { AuthContext } from './../context/Auth';
+import { AuthContext } from '../context/Auth';
 import { useContext, useEffect, useState } from 'react';
 
-const Children = React.memo((props: { children }) => {
-  return <main className="px-5">{props.children}</main>;
-});
+// const Children = React.memo((props: { children }) => {
+//   return <main className="px-5">{props.children}</main>;
+// });
 
 export default function User_layout({ children }) {
-  const { currentUser } = useContext(AuthContext);
+  // メモ化されたヘッダー
+  const Header = React.memo(() => {
+    const { currentUser } = useContext(AuthContext);
 
-  const [userMenuStatus, setUserMenuStatus] = useState(false);
+    const [userMenuStatus, setUserMenuStatus] = useState(false);
 
-  useEffect(() => {
-    !currentUser && router.push('/login');
-  }, [currentUser]);
+    useEffect(() => {
+      !currentUser && router.push('/login');
+    }, [currentUser]);
 
-  const logout = () => {
-    if (!!currentUser) firebase.auth().signOut();
-  };
-
-  return (
-    <>
+    const logout = () => {
+      if (!!currentUser) firebase.auth().signOut();
+    };
+    return (
       <header className="w-full shadow flex items-center justify-between p-5 py-1 relative">
         <h1 className="text-2xl py-3 font-bold">Pandora</h1>
         <button
@@ -79,7 +79,13 @@ export default function User_layout({ children }) {
           </div>
         )}
       </header>
-      <Children>{children}</Children>
+    );
+  });
+
+  return (
+    <>
+      <Header />
+      <main className="px-5">{children}</main>
     </>
   );
 }

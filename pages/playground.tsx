@@ -1,6 +1,6 @@
-import Add_event_form from './../component/Add_event_form';
+import Add_event_form from '../components/Add_event_form';
 
-export default function Playground () {
+export default function Playground() {
   return (
     <>
       <h1>Playground</h1>

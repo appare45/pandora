@@ -1,4 +1,4 @@
-import User_layout from './../component/User_layout';
+import User_layout from '../components/User_layout';
 import { AuthContext, AuthProvider } from '../context/Auth';
 
 export function AddEvent() {

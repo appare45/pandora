@@ -34,20 +34,15 @@ export default function LoginFront() {
         {currentUser === undefined && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            fill="#000000"
             className="animate-spin h-5 text-gray-900 mx-1"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
+            <rect fill="none" height="24" width="24" />
+            <path d="M2.88,7.88l1.54,1.54C4.15,10.23,4,11.1,4,12c0,4.41,3.59,8,8,8s8-3.59,8-8s-3.59-8-8-8c-0.9,0-1.77,0.15-2.58,0.42 L7.89,2.89C9.15,2.32,10.54,2,12,2c5.52,0,10,4.48,10,10s-4.48,10-10,10S2,17.52,2,12C2,10.53,2.32,9.14,2.88,7.88z M7,5.5 C7,6.33,6.33,7,5.5,7S4,6.33,4,5.5S4.67,4,5.5,4S7,4.67,7,5.5z" />
           </svg>
         )}
-        {currentUser === null ? "ログイン" : "ログイン中"}
+        {currentUser === null ? 'ログイン' : 'ログイン中'}
       </button>
       {!!currentUser
         ? `ログイン中のユーザー：${currentUser.displayName}`

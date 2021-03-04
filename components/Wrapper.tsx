@@ -6,11 +6,17 @@ import { WrapperContext } from './../contexts/Wrapper';
 
 const Wrapper = (props: { children: Object; cancelFunction: Function }) => {
   const WrapperState = useContext(WrapperContext);
-  console.log(WrapperState)
   return (
     <>
       {WrapperState.currentDisplayState && (
-        <div className="w-full h-full fixed inset-0 bg-gray-50 bg-opacity-90 flex justify-center items-end py-5">
+        <div
+          className="w-full h-full fixed inset-0 bg-gray-50 bg-opacity-90 flex justify-center items-end py-5"
+          // esc入力時もモーダルを閉じる
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key == 'Escape') WrapperState.setCurrentDisplayState(false);
+          }}
+        >
           <div
             className="w-full h-full fixed inset-0 cursor-pointer"
             onClick={() => WrapperState.setCurrentDisplayState(false)}

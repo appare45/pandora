@@ -23,7 +23,9 @@ export default function LoginFront() {
   >(null);
 
   return (
-    <>
+    <div className="flex row justify-center items-center flex-col m-0">
+      <p>催し物管理システム</p>
+      <h1>Pandora</h1>
       <button
         className={`flex items-center bg-blue-300 p-2 px-4 rounded shadow m-2 disabled:opacity-50 ${
           loginStatus === undefined && 'opacity-50'
@@ -44,10 +46,7 @@ export default function LoginFront() {
         )}
         ログイン
       </button>
-      {!!currentUser
-        ? `ログイン中のユーザー：${currentUser.displayName}`
-        : 'ログインしていない'}
       <p></p>
-    </>
+    </div>
   );
 }

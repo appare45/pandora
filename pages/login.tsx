@@ -8,7 +8,6 @@ export default function LoginFront() {
 
   useEffect(() => {
     !!currentUser && router.push('/');
-    console.log(currentUser);
     setLoginStatus(currentUser);
   }, [currentUser]);
 

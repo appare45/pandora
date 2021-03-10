@@ -12,8 +12,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+var app;
+
 if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
+  app = firebase.initializeApp(firebaseConfig);
 }
 
+export { app };
 export default firebase;

@@ -17,7 +17,7 @@ const AuthProvider: FC = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<
     firebase.User | null | undefined
   >(undefined);
-
+  
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       setCurrentUser(user);

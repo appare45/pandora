@@ -14,7 +14,7 @@ export default function User_layout({ children }) {
     const [userMenuStatus, setUserMenuStatus] = useState(false);
 
     useEffect(() => {
-      !currentUser && router.push('/login');
+      currentUser === null && router.push('/login');
     }, [currentUser]);
 
     const logout = () => {

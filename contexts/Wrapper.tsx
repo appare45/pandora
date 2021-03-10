@@ -14,9 +14,7 @@ const WrapperContext = createContext<WrapperContextProps>({
 
 const WrapperProvider: FC = ({ children }) => {
   // 表示非表示の状態管理用state
-  const [currentDisplayState, setCurrentDisplayState] = useState<Boolean>(
-    true
-  );
+  const [currentDisplayState, setCurrentDisplayState] = useState<Boolean>(true);
   // 表示されているものの状態間利用state
   const [currentDisplayType, setCurrentDisplayType] = useState<string>();
   return (
@@ -28,7 +26,7 @@ const WrapperProvider: FC = ({ children }) => {
         setCurrentDisplayType: setCurrentDisplayType,
       }}
     >
-      {children}
+      {currentDisplayState && children}
     </WrapperContext.Provider>
   );
 };

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@firebase/firestore-types": "^2.1.0",
+    "@headlessui/react": "^0.3.1",
     "firebase": "^8.2.10",
     "next": "10.0.8",
     "react": "17.0.1",

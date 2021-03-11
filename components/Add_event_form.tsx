@@ -55,9 +55,8 @@ export default function Add_event_form() {
   function addEvent(e: FormEvent) {
     e.preventDefault();
     console.table({
-      'name': eventName,
-      
-    })
+      name: eventName,
+    });
   }
 
   const [eventName, setEventName] = useState<string>('');

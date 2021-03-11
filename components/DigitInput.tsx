@@ -45,10 +45,12 @@ export default function DigitInputs(props: { setDigit?: Function }) {
   // 現在入力済みのコード
   const [digit, setDigit] = useState<number[]>([0, 0, 0, 0, 0, 0]);
   // 現在フォーカスされている桁
-  const [focusedElement, setFocusedElement] = useState<number>(Math.min(...digit));
+  const [focusedElement, setFocusedElement] = useState<number>(
+    Math.min(...digit)
+  );
   const elementsIds: number[] = [0, 1, 2, 3, 4, 5, 6];
   function elementFocus(id) {
-    console.log(id)
+    console.log(id);
     // フォーカスが当たる桁を移動
     if (Math.max(...elementsIds) > id) {
       setFocusedElement(id + 1);

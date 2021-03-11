@@ -2,7 +2,6 @@ import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
 import './../components/Action_button';
 
-
 export function AddEvent() {
   return (
     <form>
@@ -25,7 +24,7 @@ export default function Home() {
         {(name) =>
           !!name.currentUser && (
             <>
-              <input type="number"/>
+              <input type="number" />
             </>
           )
         }

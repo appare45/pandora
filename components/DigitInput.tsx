@@ -11,7 +11,7 @@ function DigitInput(props: { focus?: boolean; onKeyUp: Function }) {
       console.log(props.focus);
     }
   });
-  function keyUp(e: KeyboardEvent) {
+  function keyUp(e) {
     if (
       (e.keyCode <= 57 && e.keyCode >= 48) ||
       (e.keyCode >= 65 && e.keyCode <= 90)
@@ -39,6 +39,7 @@ function Inputs(props: {
   elementsIds: number[];
   focusedElement: number;
   elementFocus: Function;
+  inputCompleted: Function;
 }): JSX.Element {
   const elements = [];
   for (let index = 0; index < props.elementsIds.length; index++) {
@@ -71,6 +72,7 @@ export default function DigitInputs(props: { setDigit?: Function }) {
           elementsIds={elementsIds}
           focusedElement={focusedElement}
           elementFocus={elementFocus}
+          inputCompleted={setDigit}
         />
       </div>
     </>

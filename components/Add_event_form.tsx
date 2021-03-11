@@ -76,7 +76,7 @@ export default function Add_event_form() {
           <EventNameInput handleChange={setEventName} />
           <div className="flex items-center  justify-center w-full h-8 my-3">
             <Event_select />
-            <Action_button addEvent={addEvent}>追加</Action_button>
+            <Action_button action={addEvent}>追加</Action_button>
           </div>
         </form>
       </Wrapper>

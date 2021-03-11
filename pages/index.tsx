@@ -1,10 +1,9 @@
 import User_layout from '../components/User_layout';
-import { AuthContext, AuthProvider } from '../contexts/Auth';
+import { AuthContext } from '../contexts/Auth';
+import './../components/Action_button';
+
 
 export function AddEvent() {
-  function addEventToDb () {
-    
-  }
   return (
     <form>
       <h2 className="text-xl font-semibold">催し物を追加</h2>
@@ -24,7 +23,11 @@ export default function Home() {
     <User_layout>
       <AuthContext.Consumer>
         {(name) =>
-          !!name.currentUser && <h1>{name.currentUser.displayName}</h1>
+          !!name.currentUser && (
+            <>
+              <input type="number"/>
+            </>
+          )
         }
       </AuthContext.Consumer>
     </User_layout>

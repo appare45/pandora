@@ -3,21 +3,14 @@ import { FC, createContext, useEffect, useState } from 'react';
 
 import firebase, { app } from '../utils/firebase';
 
-type userData = {
-  name: string;
-  timestamp: Date;
-};
-
 type AuthContextProps = {
   currentUser: firebase.User | null | undefined;
-  db: firebase.firestore.Firestore | null | undefined;
-  userData: DocumentReference | undefined;
+  data: firebase.firestore.Firestore | null | undefined;
 };
 
 const AuthContext = createContext<AuthContextProps>({
   currentUser: undefined,
-  db: undefined,
-  userData: undefined,
+  data: undefined,
 });
 
 const AuthProvider: FC = ({ children }) => {
@@ -30,8 +23,11 @@ const AuthProvider: FC = ({ children }) => {
   >(undefined);
 
   useEffect(() => {
+    // ログイン状態が変更されたとき
     firebase.auth().onAuthStateChanged((user) => {
+      // 現在のユーザーを設定
       setCurrentUser(user);
+      // DBを更新
       async function setDb() {
         const data = await db.collection('users').doc(user.uid);
         setUserData(data);
@@ -53,9 +49,7 @@ const AuthProvider: FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{ currentUser: currentUser, db: db, userData: userData }}
-    >
+    <AuthContext.Provider value={{ currentUser: currentUser, data: db }}>
       {children}
     </AuthContext.Provider>
   );

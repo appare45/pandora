@@ -19,16 +19,17 @@ function DigitInput(props: {
   function keyUp(e) {
     if (ref.current.value.length > 1) {
       ref.current.value = ref.current.value.slice(1);
+      props.onKeyUp(props.id, e.key);
     } else if (
       // 入力されたキーが数字若しくは文字だった場合フォーカス先を変更
       (e.keyCode <= 57 && e.keyCode >= 48) ||
       (e.keyCode >= 65 && e.keyCode <= 90)
     ) {
+      props.onKeyUp(props.id, e.key);
     } else {
       // そうでない場合は入力された桁を空白に変更
       ref.current.value = '';
     }
-    props.onKeyUp(props.id, ref.current.value);
   }
   return (
     <input
@@ -37,7 +38,7 @@ function DigitInput(props: {
       min={0}
       required={true}
       onKeyUp={(e) => keyUp(e)}
-      className="bg-gray-100 p-3 px-0 text-xl m-0.5 text-center border-2 rounded focus:ring-2 focus:ring-offset-2"
+      className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2"
       ref={ref}
       size={1}
       key={props.key}
@@ -84,7 +85,7 @@ export default function DigitInputs(props: { setDigit?: Function }) {
   }
   return (
     <>
-      <div className="flex w-100 justify-around">
+      <div className="flex w-full max-w-full justify-around">
         <Inputs
           elementsIds={elementsIds}
           focusedElement={focusedElement}

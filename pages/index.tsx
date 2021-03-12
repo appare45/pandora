@@ -1,6 +1,6 @@
 import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
-import './../components/Action_button';
+import '../components/ActionButton';
 
 export function AddEvent() {
   return (

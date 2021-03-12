@@ -35,7 +35,7 @@ function DigitInput(props: {
       maxLength={1}
       required={true}
       onKeyUp={(e) => keyUp(e)}
-      className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2 focus:shadow-lg"
+      className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2 focus:shadow-lg font-mono"
       ref={ref}
       size={1}
       key={props.key}

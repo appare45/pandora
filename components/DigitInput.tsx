@@ -17,11 +17,6 @@ function DigitInput(props: {
     }
   }, [props.focus]);
   function keyUp(e) {
-    if (ref.current.value.length > 1) {
-      // 一文字以上入力された場合に最後の桁だけを残す
-      ref.current.value = ref.current.value.slice(1);
-      props.onKeyUp(props.id, e.key);
-    }
     if (
       // 入力されたキーが数字若しくは文字だった場合フォーカス先を変更
       (e.keyCode <= 57 && e.keyCode >= 48) ||
@@ -31,6 +26,7 @@ function DigitInput(props: {
     } else if (!(e.keyCode >= 16 && e.keyCode <= 20)) {
       // そうでない場合は入力された桁を空白に変更
       ref.current.value = '';
+      props.onKeyUp(props.id, '');
     }
   }
   return (
@@ -39,7 +35,7 @@ function DigitInput(props: {
       maxLength={1}
       required={true}
       onKeyUp={(e) => keyUp(e)}
-      className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2"
+      className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2 focus:shadow-lg"
       ref={ref}
       size={1}
       key={props.key}
@@ -77,11 +73,9 @@ export default function DigitInputs(props: { setDigit?: Function }) {
   function elementFocus(id: number, inputKey: string) {
     digit[id] = inputKey;
     // フォーカスが当たる桁を移動
+    props.setDigit(digit);
     if (Math.max(...elementsIds) > id) {
       setFocusedElement(id + 1);
-    } else {
-      // 最後の桁に到達した場合はsetDigitをdigitを引数にして実行
-      props.setDigit(digit);
     }
   }
   return (

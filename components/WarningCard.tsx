@@ -5,7 +5,7 @@ export default function WarningCard(props: {
 }) {
   return (
     <div className="bg-yellow-50 mx-1 rounded-lg px-4 py-2 flex items-center mt-2 opacity-80">
-      <div className="w-12 h-12 mr-5 pt-0.5">
+      <div className="w-8 h-8 md:w-12 md:h-12 mr-2 md:mr-5 pt-0.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -22,7 +22,7 @@ export default function WarningCard(props: {
         </svg>
       </div>
       <div>
-        <p className="opacity-70 text-sm leading-5">{props.title}</p>
+        <p className="opacity-70 text-sm mb-0.5 md:leading-5">{props.title}</p>
         <p className="text-xs opacity-70">{props.description}</p>
       </div>
     </div>

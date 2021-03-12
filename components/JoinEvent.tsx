@@ -18,8 +18,10 @@ export default function JoinEvent() {
   }>({ status: false });
   function Completed(digit: string[]) {
     setDigit([...digit]);
-    if (digit.length === 6) {
+    if (digit.join('').length === 6) {
       setSubmitState(true);
+    } else {
+      setSubmitState(false);
     }
   }
   async function JoinEventMethod(data) {

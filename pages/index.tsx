@@ -2,6 +2,9 @@ import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import JoinEvent from '../components/JoinEvent';
+import firebase from './../utils/firebase';
+import { FirebaseFirestore } from '@firebase/firestore-types';
+import { useEffect, useState } from 'react';
 
 export function AddEvent() {
   return (
@@ -18,10 +21,26 @@ export function AddEvent() {
   );
 }
 
+function App(props: { data }) {
+  const db: FirebaseFirestore = props.data.data;
+  const user: firebase.User = props.data.currentUser;
+  const [data, setData] = useState<any | undefined>();
+  if (!!user && !!db) {
+    db.collection('users')
+      .doc(user.uid)
+      .get()
+      .then((doc) => setData(doc.data()));
+  }
+  useEffect(() => {}, [user]);
+  return <>{data?.joinedEvent === undefined && !!user && <JoinEvent />}</>;
+}
+
 export default function Home() {
   return (
     <User_layout>
-      <JoinEvent />
+      <AuthContext.Consumer>
+        {(data) => <App data={data} />}
+      </AuthContext.Consumer>
       <p>hi!</p>
     </User_layout>
   );

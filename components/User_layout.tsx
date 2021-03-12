@@ -1,9 +1,8 @@
 import React from 'react';
 import firebase from '../utils/firebase';
 import router from 'next/router';
-import { AuthContext } from '../contexts/Auth';
+import { AuthContext, AuthProvider } from '../contexts/Auth';
 import { WrapperProvider } from './../contexts/Wrapper';
-import Wrapper from './../components/Wrapper';
 import { useContext, useEffect, useState } from 'react';
 
 export default function User_layout({ children }) {
@@ -84,7 +83,9 @@ export default function User_layout({ children }) {
     <>
       <Header />
       <WrapperProvider>
-        <main className="px-5">{children}</main>
+        <AuthProvider>
+          <main className="px-5">{children}</main>
+        </AuthProvider>
       </WrapperProvider>
     </>
   );

@@ -20,13 +20,15 @@ function DigitInput(props: {
     if (ref.current.value.length > 1) {
       ref.current.value = ref.current.value.slice(1);
       props.onKeyUp(props.id, e.key);
-    } else if (
+    }
+    if (
       // 入力されたキーが数字若しくは文字だった場合フォーカス先を変更
       (e.keyCode <= 57 && e.keyCode >= 48) ||
-      (e.keyCode >= 65 && e.keyCode <= 90)
+      (e.keyCode >= 65 && e.keyCode <= 90) ||
+      e.key == 9
     ) {
       props.onKeyUp(props.id, e.key);
-    } else {
+    } else if (!(e.keyCode >= 16 && e.keyCode <= 20)) {
       // そうでない場合は入力された桁を空白に変更
       ref.current.value = '';
     }
@@ -72,7 +74,7 @@ let digit: string[] = [];
 export default function DigitInputs(props: { setDigit?: Function }) {
   // 現在フォーカスされている桁
   const [focusedElement, setFocusedElement] = useState<number>(0);
-  const elementsIds: number[] = [0, 1, 2, 3, 4, 5, 6];
+  const elementsIds: number[] = [0, 1, 2, 3, 4, 5];
   function elementFocus(id: number, inputKey: string) {
     digit[id] = inputKey;
     // フォーカスが当たる桁を移動

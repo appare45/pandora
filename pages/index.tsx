@@ -20,15 +20,7 @@ export function AddEvent() {
 export default function Home() {
   return (
     <User_layout>
-      <AuthContext.Consumer>
-        {(name) =>
-          !!name.currentUser && (
-            <>
-              <input type="number" />
-            </>
-          )
-        }
-      </AuthContext.Consumer>
+      <p>hi!</p>
     </User_layout>
   );
 }

@@ -1,6 +1,5 @@
 import 'react';
 import { useEffect, useRef, useState } from 'react';
-import WarningCard from './WarningCard';
 
 function DigitInput(props: {
   focus?: boolean;
@@ -19,14 +18,14 @@ function DigitInput(props: {
   }, [props.focus]);
   function keyUp(e) {
     if (ref.current.value.length > 1) {
+      // 一文字以上入力された場合に最後の桁だけを残す
       ref.current.value = ref.current.value.slice(1);
       props.onKeyUp(props.id, e.key);
     }
     if (
       // 入力されたキーが数字若しくは文字だった場合フォーカス先を変更
       (e.keyCode <= 57 && e.keyCode >= 48) ||
-      (e.keyCode >= 65 && e.keyCode <= 90) ||
-      e.key == 9
+      (e.keyCode >= 65 && e.keyCode <= 90)
     ) {
       props.onKeyUp(props.id, e.key);
     } else if (!(e.keyCode >= 16 && e.keyCode <= 20)) {
@@ -37,8 +36,7 @@ function DigitInput(props: {
   return (
     <input
       type="text"
-      max={9}
-      min={0}
+      maxLength={1}
       required={true}
       onKeyUp={(e) => keyUp(e)}
       className="bg-gray-100 py-5 text-lg w-10 h-10 px-0 my-0.5 md:mx-2 text-center border-2 rounded focus:ring-2 focus:ring-offset-2"

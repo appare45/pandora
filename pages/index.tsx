@@ -1,6 +1,7 @@
 import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
+import JoinEvent from '../components/JoinEvent';
 
 export function AddEvent() {
   return (
@@ -20,6 +21,7 @@ export function AddEvent() {
 export default function Home() {
   return (
     <User_layout>
+      <JoinEvent />
       <p>hi!</p>
     </User_layout>
   );

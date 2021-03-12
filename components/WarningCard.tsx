@@ -22,9 +22,7 @@ export default function WarningCard(props: {
         </svg>
       </div>
       <div>
-        <p className="opacity-70 text-sm leading-5">
-          {props.title}
-        </p>
+        <p className="opacity-70 text-sm leading-5">{props.title}</p>
         <p className="text-xs opacity-70">{props.description}</p>
       </div>
     </div>

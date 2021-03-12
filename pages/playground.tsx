@@ -4,12 +4,14 @@ import ActionCard from './../components/ActionCard';
 import ActionButton from '../components/ActionButton';
 
 import { useState } from 'react';
-import { AuthContext, AuthProvider } from '../contexts/Auth';
+import { AuthContext } from '../contexts/Auth';
 import { FirebaseFirestore } from '@firebase/firestore-types';
+import WarningCard from '../components/WarningCard';
 
 function JoinEvent() {
   const [digit, setDigit] = useState<string[]>();
   const [submitState, setSubmitState] = useState<'loading' | boolean>(false);
+  const [submitError, setSubmitError] = useState<undefined | boolean>(true);
   function Completed(digit: string[]) {
     setDigit([...digit]);
     if (digit.length === 6) {
@@ -24,11 +26,16 @@ function JoinEvent() {
       .where('joinId', '==', digit.join(''))
       .get()
       .then((snapShot) => {
-        snapShot.forEach((doc) => {
-          console.info(doc.data());
-        });
-        setSubmitState(true);
+        if (snapShot.docs.length > 0) {
+          setSubmitError(true);
+          snapShot.forEach((doc) => {
+            console.info(doc.data());
+          });
+        } else {
+          setSubmitError(false);
+        }
       });
+    setSubmitState(true);
   }
   return (
     <div className="w-full">
@@ -50,6 +57,12 @@ function JoinEvent() {
             )}
           </AuthContext.Consumer>
         </div>
+        {!submitError && (
+          <WarningCard
+            title="催し物が見つかりませんでした"
+            description="催し物コードを確認してください"
+          />
+        )}
       </ActionCard>
     </div>
   );

@@ -1,5 +1,6 @@
 import 'react';
 import { useEffect, useRef, useState } from 'react';
+import WarningCard from './WarningCard';
 
 function DigitInput(props: {
   focus?: boolean;

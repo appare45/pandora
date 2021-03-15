@@ -1,7 +1,26 @@
+import Head from 'next/head';
 import 'react';
 import React, { useEffect, useRef, useState } from 'react';
+
 function Preview(props: { currentDocument: string[] }) {
   const [renderedHtml, updateRenderedHtml] = useState<JSX.Element[]>();
+  class EmbedTweet extends React.Component<{ id: string | number }> {
+    // Twitter埋め込み
+    private target: React.RefObject<HTMLDivElement>;
+    constructor(props) {
+      super(props);
+      this.target = React.createRef();
+    }
+    componentDidMount() {
+      window['twttr'].widgets
+        .createTweet(this.props.id, this.target.current, { align: 'left' })
+        .then(console.log(`loaded${this.props.id}`));
+    }
+
+    render() {
+      return <div ref={this.target}></div>;
+    }
+  }
 
   function renderHeading(content: string, level: number): JSX.Element {
     // Heading
@@ -30,9 +49,11 @@ function Preview(props: { currentDocument: string[] }) {
   function renderPreview(document: readonly string[]) {
     const renderedHtmls: JSX.Element[] = [];
     document.forEach((line) => {
+      let renderedElement: JSX.Element;
       if (line == '') {
-        renderedHtmls.push(<br />);
-      } else if (!!line.match(/#.+/gm)) {
+        // 改行
+        renderedElement = <br />;
+      } else if (!!line.match(/^#.+/gm)) {
         //  Headings
         let headingLevel = 0;
         for (let index = 0; index < line.length; index++) {
@@ -43,20 +64,30 @@ function Preview(props: { currentDocument: string[] }) {
           }
         }
         if (headingLevel > 4) headingLevel = 4;
-        renderedHtmls.push(renderHeading(line.match(/#.+/gm)[0], headingLevel));
+        renderedElement = renderHeading(line.match(/#.+/gm)[0], headingLevel);
       } else if (!!line.match(/!\[.*]\(.+\)/gm)) {
         // Image
         // https://daringfireball.net/projects/markdown/syntax#img
-        renderedHtmls.push(
-          renderImage(
-            line.replace(/.+\]\(/gm, '').replace(/\)/, ''),
-            line.replace(/!\[/gm, '').replace(/\].+/gm, '')
-          )
+        renderedElement = renderImage(
+          line.replace(/.+\]\(/gm, '').replace(/\)/, ''),
+          line.replace(/!\[/gm, '').replace(/\].+/gm, '')
+        );
+      } else if (
+        !!line.match(/^https:\/\/twitter\.com\/.+\/status\/[0-9]+\??.+?$/gm)
+      ) {
+        // Twitter
+        renderedElement = (
+          <EmbedTweet
+            id={line
+              .replace(/^https:\/\/twitter\.com\/.+\/status\//, '')
+              .replace(/\?.+?$/, '')}
+          />
         );
       } else {
         // 段落
-        renderedHtmls.push(renderParagraph(line));
+        renderedElement = renderParagraph(line);
       }
+      renderedHtmls.push(renderedElement);
     });
     updateRenderedHtml(renderedHtmls);
   }
@@ -71,20 +102,32 @@ function Preview(props: { currentDocument: string[] }) {
 }
 function Editor(props: { update: Function }) {
   const ref = useRef<HTMLTextAreaElement>();
+  const [currentValue, setCurrentValue] = useState<string>('');
+  useEffect(() => {
+    props.update(currentValue.split('\n'));
+  }, [currentValue]);
   return (
-    <textarea
-      className="bg-gray-100 w-full p-1 h-96 resize-y"
-      onInput={() => props.update(ref.current.value.split('\n'))}
-      ref={ref}
-    ></textarea>
+    <>
+      <textarea
+        className="bg-gray-100 w-full p-1 h-96 resize-y"
+        onInput={() => setCurrentValue(ref.current.value)}
+        ref={ref}
+        value={currentValue}
+      ></textarea>
+    </>
   );
 }
 export default function Editors() {
   const [editingDocument, updateEditingDocument] = useState<string[]>([]);
   return (
-    <div className="p-5 flex flex-col">
-      <Preview currentDocument={editingDocument} />
-      <Editor update={updateEditingDocument} />
-    </div>
+    <>
+      <Head>
+        <script src="https://platform.twitter.com/widgets.js"></script>
+      </Head>
+      <div className="p-5 flex flex-col">
+        <Preview currentDocument={editingDocument} />
+        <Editor update={updateEditingDocument} />
+      </div>
+    </>
   );
 }

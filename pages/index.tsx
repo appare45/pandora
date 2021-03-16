@@ -24,15 +24,20 @@ export function AddEvent() {
 function App(props: { data }) {
   const db: FirebaseFirestore = props.data.data;
   const user: firebase.User = props.data.currentUser;
-  const [data, setData] = useState<any | undefined>();
+  const [data, setData] = useState<any | undefined>(null);
   if (!!user && !!db) {
     db.collection('users')
       .doc(user.uid)
       .get()
       .then((doc) => setData(doc.data()));
   }
-  useEffect(() => {}, [user]);
-  return <>{data?.joinedEvent === undefined && !!user && <JoinEvent />}</>;
+  return (
+    <>
+      {data !== null && data?.joinedEvent === undefined && !!user && (
+        <JoinEvent />
+      )}
+    </>
+  );
 }
 
 export default function Home() {

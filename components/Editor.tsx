@@ -137,9 +137,20 @@ function Preview(props: { currentDocument: string[] }) {
           line.replace(/\/viewform[?#]?usp=.*/gm, '/viewform?embedded=true')
         );
       } else if (!!line.match(/^https:\/\/youtu\.be\/.+$/gm)) {
-        // Google Forms
+        // YouTube
         renderedElement = EmbedGoogleDocs(
-          line.replace(/^https:\/\/youtu\.be\//gm, 'https://youtube.com/embed/')
+          line.replace(
+            /^https:\/\/youtu\.be\//gm,
+            'https://www.youtube-nocookie.com/embed/'
+          )
+        );
+      } else if (!!line.match(/^https:\/\/www\.youtube\.com\/watch\?v=.+$/gm)) {
+        // YouTube
+        renderedElement = EmbedGoogleDocs(
+          line.replace(
+            /^https:\/\/www\.youtube\.com\/watch\?v=/gm,
+            'https://www.youtube-nocookie.com/embed/'
+          )
         );
       } else {
         // 段落

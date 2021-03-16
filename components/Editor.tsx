@@ -24,7 +24,7 @@ function Preview(props: { currentDocument: string[] }) {
 
   function EmbedGoogleDocs(url: string) {
     return (
-      <div className="w-full h-72 my-5 md:h-96 flex justify-center">
+      <div className="w-full h-72 my-5 md:h-80 flex justify-center">
         <iframe src={url} className="h-full w-full max-w-xl "></iframe>
       </div>
     );
@@ -123,7 +123,7 @@ function Preview(props: { currentDocument: string[] }) {
           /^https:\/\/drive\.google\.com\/file\/d\/.+\/view[?#]?.*$/gm
         )
       ) {
-        // Google Documents
+        // Google Drive
         renderedElement = EmbedGoogleDocs(
           line.replace(/\/view[#?]?.*$/gm, '/preview')
         );
@@ -135,6 +135,11 @@ function Preview(props: { currentDocument: string[] }) {
         // Google Forms
         renderedElement = EmbedGoogleDocs(
           line.replace(/\/viewform[?#]?usp=.*/gm, '/viewform?embedded=true')
+        );
+      } else if (!!line.match(/^https:\/\/youtu\.be\/.+$/gm)) {
+        // Google Forms
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/^https:\/\/youtu\.be\//gm, 'https://youtube.com/embed/')
         );
       } else {
         // 段落

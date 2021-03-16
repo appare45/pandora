@@ -13,13 +13,21 @@ function Preview(props: { currentDocument: string[] }) {
     }
     componentDidMount() {
       window['twttr'].widgets
-        .createTweet(this.props.id, this.target.current, { align: 'left' })
-        .then(console.log(`loaded${this.props.id}`));
+        .createTweet(this.props.id, this.target.current, { align: 'center' })
+        .then(console.log(`Tweet loaded ${this.props.id}`));
     }
 
     render() {
       return <div ref={this.target}></div>;
     }
+  }
+
+  function EmbedGoogleDocs(url: string) {
+    return (
+      <div className="w-full h-72 my-5 md:h-96 flex justify-center">
+        <iframe src={url} className="h-full w-full max-w-xl "></iframe>
+      </div>
+    );
   }
 
   function renderHeading(content: string, level: number): JSX.Element {
@@ -53,7 +61,7 @@ function Preview(props: { currentDocument: string[] }) {
       if (line == '') {
         // 改行
         renderedElement = <br />;
-      } else if (!!line.match(/^#.+/gm)) {
+      } else if (!!line.match(/^#.+$/gm)) {
         //  Headings
         let headingLevel = 0;
         for (let index = 0; index < line.length; index++) {
@@ -65,7 +73,7 @@ function Preview(props: { currentDocument: string[] }) {
         }
         if (headingLevel > 4) headingLevel = 4;
         renderedElement = renderHeading(line.match(/#.+/gm)[0], headingLevel);
-      } else if (!!line.match(/!\[.*]\(.+\)/gm)) {
+      } else if (!!line.match(/^!\[.*]\(.+\)$/gm)) {
         // Image
         // https://daringfireball.net/projects/markdown/syntax#img
         renderedElement = renderImage(
@@ -83,6 +91,51 @@ function Preview(props: { currentDocument: string[] }) {
               .replace(/\?.+?$/, '')}
           />
         );
+      } else if (
+        !!line.match(
+          /^https:\/\/docs.google.com\/spreadsheets\/d\/.+\/edit[#?]?.*$/gm
+        )
+      ) {
+        // Google Spreadsheets
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/\/edit[#?]?.*$/gm, '/pubhtml')
+        );
+      } else if (
+        !!line.match(
+          /^https:\/\/docs.google.com\/presentation\/d\/.+\/edit[#?]?.*$/gm
+        )
+      ) {
+        // Google slides
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/\/edit[#?]?.*$/gm, '/embed')
+        );
+      } else if (
+        !!line.match(
+          /^https:\/\/docs.google.com\/document\/d\/.+\/edit[#?]?.*$/gm
+        )
+      ) {
+        // Google Documents
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/\/edit[#?]?.*$/gm, '/pub')
+        );
+      } else if (
+        !!line.match(
+          /^https:\/\/drive\.google\.com\/file\/d\/.+\/view[?#]?.*$/gm
+        )
+      ) {
+        // Google Documents
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/\/view[#?]?.*$/gm, '/preview')
+        );
+      } else if (
+        !!line.match(
+          /^https:\/\/docs\.google\.com\/forms\/d\/e\/.+\/viewform[?#]?usp=.*/gm
+        )
+      ) {
+        // Google Forms
+        renderedElement = EmbedGoogleDocs(
+          line.replace(/\/viewform[?#]?usp=.*/gm, '/viewform?embedded=true')
+        );
       } else {
         // 段落
         renderedElement = renderParagraph(line);
@@ -95,7 +148,7 @@ function Preview(props: { currentDocument: string[] }) {
     renderPreview(props.currentDocument);
   }, [props.currentDocument]);
   return (
-    <div className="bg-gray-50 w-full p-1 h-96 overflow-scroll break-words">
+    <div className="bg-gray-50 w-full p-3 h-96 overflow-y-scroll break-words md:h-screen">
       {renderedHtml}
     </div>
   );
@@ -109,7 +162,7 @@ function Editor(props: { update: Function }) {
   return (
     <>
       <textarea
-        className="bg-gray-100 w-full p-1 h-96 resize-y"
+        className="bg-gray-100 w-full p-1 h-96 resize-y md:h-screen"
         onInput={() => setCurrentValue(ref.current.value)}
         ref={ref}
         value={currentValue}
@@ -124,7 +177,7 @@ export default function Editors() {
       <Head>
         <script src="https://platform.twitter.com/widgets.js"></script>
       </Head>
-      <div className="p-5 flex flex-col">
+      <div className="p-5 flex flex-col md:flex-row">
         <Preview currentDocument={editingDocument} />
         <Editor update={updateEditingDocument} />
       </div>

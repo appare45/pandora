@@ -1,10 +1,11 @@
+import React from 'react';
 import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import JoinEvent from '../components/JoinEvent';
 import firebase from './../utils/firebase';
-import { FirebaseFirestore } from '@firebase/firestore-types';
-import { useEffect, useState } from 'react';
+import { DocumentSnapshot, FirebaseFirestore } from '@firebase/firestore-types';
+import { useContext, useEffect, useState } from 'react';
 
 export function AddEvent() {
   return (
@@ -21,32 +22,59 @@ export function AddEvent() {
   );
 }
 
-function App(props: { data }) {
-  const db: FirebaseFirestore = props.data.data;
-  const user: firebase.User = props.data.currentUser;
-  const [data, setData] = useState<any | undefined>(null);
-  if (!!user && !!db) {
+const EventInfo = React.memo((props: { user: firebase.User }) => {
+  const context = useContext(AuthContext);
+  const db: FirebaseFirestore = context.data;
+  const [currentEvent, setCurrentEvent] = useState<Object | any>();
+  useEffect(() => {
+    if (!!db && !!props.user) {
+      db.collection('users')
+        .doc(props.user?.uid)
+        .get()
+        .then((doc) => {
+          db.collection('event')
+            .doc(doc.data().joinedEvent)
+            .get()
+            .then((event) => setCurrentEvent(event.data()))
+            .catch((error) => console.error(error));
+        })
+        .catch((error) => console.error(error));
+    } else {
+      console.error(props);
+    }
+  }, [props.user]);
+  return <>イベント名：{currentEvent?.name}</>;
+});
+
+const App = React.memo((props: { user: firebase.User }) => {
+  const context = useContext(AuthContext);
+  const db: FirebaseFirestore = context.data;
+  const [userData, setUserData] = useState<null | DocumentSnapshot>(null);
+  if (!!props.user?.uid) {
     db.collection('users')
-      .doc(user.uid)
-      .get()
-      .then((doc) => setData(doc.data()));
+      .doc(props.user.uid)
+      .onSnapshot((user) => setUserData(user));
   }
   return (
     <>
-      {data !== null && data?.joinedEvent === undefined && !!user && (
+      {userData !== null &&
+      userData.data()?.joinedEvent === undefined &&
+      !!props.user ? (
         <JoinEvent />
+      ) : (
+        <EventInfo user={props.user} />
       )}
     </>
   );
-}
+});
 
 export default function Home() {
+  const context = useContext(AuthContext);
+  const [user, setUser] = useState<firebase.User>();
+  useEffect(() => setUser(context.currentUser), [context]);
   return (
     <User_layout>
-      <AuthContext.Consumer>
-        {(data) => <App data={data} />}
-      </AuthContext.Consumer>
-      <p>hi!</p>
+      <App user={user} />
     </User_layout>
   );
 }

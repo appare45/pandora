@@ -1,6 +1,6 @@
 const Action_button = (props: {
   children: Object;
-  action: Function;
+  action?: Function;
   enabled?: boolean | 'loading';
 }) => {
   return (

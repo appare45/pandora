@@ -2,21 +2,44 @@ import { useRef, useState } from 'react';
 import Action_button from './ActionButton';
 import ActionCard from './ActionCard';
 
-function FilePreview(props: { files: FileList }) {
+function FilePreview(props: { files: FileList }): JSX.Element {
   const elements: JSX.Element[] = [];
   for (let i = 0; i < props.files.length; i++) {
+    const videoRef = useRef<HTMLVideoElement>();
     const file = props.files[i];
-    if (file.type.match(/image\/.+/)) {
-      elements.push(<img src={URL.createObjectURL(file)} />);
-    }
+    elements.push(
+      <div className="p-2 rounded bg-gray-50 my-2">
+        {file.type.match(/image\/.+/) ? (
+          <img
+            src={URL.createObjectURL(file)}
+            className="w-full h-48 object-contain"
+          />
+        ) : (
+          <video
+            src={URL.createObjectURL(file)}
+            className="w-full h-48 object-contain"
+            controls
+            disablePictureInPicture
+            controlsList="nodownload"
+            ref={videoRef}
+          />
+        )}
+        <div className="flex justify-between items-baseline">
+          <p className="truncate">{file.name}</p>
+          <p className="opacity-70 text-sm">
+            {!!videoRef.current?.duration
+              ? Math.round(videoRef.current.duration) < 60
+                ? `${Math.round(videoRef.current.duration)}秒`
+                : `${Math.round(videoRef.current.duration / 60)}分`
+              : file.size > 10000
+              ? `${Math.round(file.size / 125000)}MB`
+              : `${Math.round(file.size / 125)}KB`}
+          </p>
+        </div>
+      </div>
+    );
   }
-  return (
-    <div className="flex overflow-x-scroll h-40">
-      {elements.map((element) => (
-        <figure className="flex-1 min-w-full overflow-hidden">{element}</figure>
-      ))}
-    </div>
-  );
+  return <div className="">{elements}</div>;
 }
 
 export default function ContentsUpload() {

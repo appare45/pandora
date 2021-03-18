@@ -7,7 +7,7 @@ function FilePreview(props: { file: File }): JSX.Element {
   const videoRef = useRef<HTMLVideoElement>();
   const [onFace, setOnFace] = useState<boolean>();
   return (
-    <div className="p-2 rounded bg-gray-50 my-2 flex-1 md:min-w-full md:flex md:items-center">
+    <div className="p-2 rounded bg-gray-50 my-2 flex-1 md:flex md:items-center w-7xl">
       {props.file.type.match(/image\/.+/) ? (
         <img
           src={URL.createObjectURL(props.file)}
@@ -80,13 +80,13 @@ export default function ContentsUpload() {
             required
             multiple
             accept="image/*,video/*"
-            onChange={(e) => setSelectedFiles(input.current.files)}
+            onChange={() => setSelectedFiles(input.current.files)}
             ref={input}
             className="p-1"
           />
           <p className="text-sm">アップロードするファイルを選択してください</p>
         </div>
-        <div className="md:flex overflow-y-auto  md:flex-wrap">
+        <div className="md:flex md:flex-col items-center">
           {!!selectedFiles?.length && filePreview}
         </div>
         <Action_button>アップロード</Action_button>

@@ -1,53 +1,63 @@
 import { useRef, useState } from 'react';
 import Action_button from './ActionButton';
 import ActionCard from './ActionCard';
+import TrueFalseSelect from './TrueFalseSelect';
 
-function FilePreview(props: { files: FileList }): JSX.Element {
-  const elements: JSX.Element[] = [];
-  for (let i = 0; i < props.files.length; i++) {
-    const videoRef = useRef<HTMLVideoElement>();
-    const file = props.files[i];
-    elements.push(
-      <div className="p-2 rounded bg-gray-50 my-2">
-        {file.type.match(/image\/.+/) ? (
-          <img
-            src={URL.createObjectURL(file)}
-            className="w-full h-48 object-contain"
-          />
-        ) : (
-          <video
-            src={URL.createObjectURL(file)}
-            className="w-full h-48 object-contain"
-            controls
-            disablePictureInPicture
-            controlsList="nodownload"
-            ref={videoRef}
-          />
-        )}
+function FilePreview(props: { file: File }): JSX.Element {
+  const videoRef = useRef<HTMLVideoElement>();
+  const [onFace, setOnFace] = useState<boolean>();
+  return (
+    <div className="p-2 rounded bg-gray-50 my-2 flex-1 md:min-w-full md:flex md:items-center">
+      {props.file.type.match(/image\/.+/) ? (
+        <img
+          src={URL.createObjectURL(props.file)}
+          className="w-full md:max-w-sm h-36 object-contain"
+        />
+      ) : (
+        <video
+          src={URL.createObjectURL(props.file)}
+          className="w-full h-36 md:max-w-sm object-contain"
+          controls
+          disablePictureInPicture
+          controlsList="nodownload"
+          ref={videoRef}
+        />
+      )}
+      <div className="md:flex-grow md:mx-3">
         <div className="flex justify-between items-baseline">
-          <p className="truncate">{file.name}</p>
+          <p className="truncate">{props.file.name}</p>
           <p className="opacity-70 text-sm">
-            {!!videoRef.current?.duration
-              ? Math.round(videoRef.current.duration) < 60
+            {!!props.file.type.match(/video\/.+/) &&
+              videoRef.current?.duration &&
+              (Math.round(videoRef.current.duration) < 60
                 ? `${Math.round(videoRef.current.duration)}秒`
-                : `${Math.round(videoRef.current.duration / 60)}分`
-              : file.size > 10000
-              ? `${Math.round(file.size / 125000)}MB`
-              : `${Math.round(file.size / 125)}KB`}
+                : `${Math.round(videoRef.current.duration / 60)}分`)}
           </p>
         </div>
+        <TrueFalseSelect
+          onChange={setOnFace}
+          trueString="顔が写っている"
+          falseString="顔が写っていない"
+          selected={onFace}
+        />
       </div>
-    );
-  }
-  return <div className="">{elements}</div>;
+    </div>
+  );
 }
 
 export default function ContentsUpload() {
   const input = useRef<null | HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<null | FileList>();
+  const filePreview: JSX.Element[] = [];
+  if (!!selectedFiles?.length) {
+    for (let index = 0; index < selectedFiles.length; index++) {
+      filePreview.push(<FilePreview file={selectedFiles[index]} />);
+    }
+  }
+
   return (
     <ActionCard>
-      <div>
+      <div className="w-full">
         <div className="text-gray-500 flex justify-center p-3 flex-col items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -76,9 +86,11 @@ export default function ContentsUpload() {
           />
           <p className="text-sm">アップロードするファイルを選択してください</p>
         </div>
+        <div className="md:flex overflow-y-auto  md:flex-wrap">
+          {!!selectedFiles?.length && filePreview}
+        </div>
+        <Action_button>アップロード</Action_button>
       </div>
-      {selectedFiles?.length && <FilePreview files={selectedFiles} />}
-      <Action_button>アップロード</Action_button>
     </ActionCard>
   );
 }

@@ -7,7 +7,7 @@ export default function Playground() {
     <>
       <WrapperProvider>
         <ContentsUpload />
-        <Editor />
+        {/* <Editor /> */}
       </WrapperProvider>
     </>
   );

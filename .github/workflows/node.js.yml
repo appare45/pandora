@@ -18,3 +18,4 @@ jobs:
       - run: npm install -g yarn
       - run: yarn install --frozen-lockfile
       - run: yarn build
+        timeout-minutes: 5

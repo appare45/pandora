@@ -1,4 +1,3 @@
-import { DocumentReference } from '@firebase/firestore-types';
 import { FC, createContext, useEffect, useState } from 'react';
 
 import firebase, { app } from '../utils/firebase';
@@ -17,9 +16,6 @@ const AuthProvider: FC = ({ children }) => {
   const db = firebase.firestore(app);
   const [currentUser, setCurrentUser] = useState<
     firebase.User | null | undefined
-  >(undefined);
-  const [userData, setUserData] = useState<
-    DocumentReference | null | undefined
   >(undefined);
 
   useEffect(() => {

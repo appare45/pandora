@@ -4,11 +4,7 @@ import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import JoinEvent from '../components/JoinEvent';
 import firebase from './../utils/firebase';
-import {
-  DocumentData,
-  DocumentSnapshot,
-  FirebaseFirestore,
-} from '@firebase/firestore-types';
+import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useEffect, useState } from 'react';
 import ContentsUpload from '../components/ContentsUpload';
 

@@ -22,12 +22,20 @@ const MediaMemo = React.memo(
     file: File;
     videoRef?: React.MutableRefObject<HTMLVideoElement>;
   }) => {
+    const [previewState, updatePreviewState] = useState<'fill' | 'contain'>(
+      'contain'
+    );
     return (
       <>
         {props.file.type.match(/image\/.+/) ? (
           <img
             src={URL.createObjectURL(props.file)}
-            className="w-full md:max-w-sm h-48 object-contain"
+            className={`w-full md:max-w-sm h-48 cursor-pointer ${
+              previewState == 'contain' ? 'object-contain' : 'object-cover'
+            }`}
+            onClick={() => {
+              updatePreviewState(previewState == 'fill' ? 'contain' : 'fill');
+            }}
           />
         ) : (
           <video

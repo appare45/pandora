@@ -84,7 +84,7 @@ export default function User_layout({ children }) {
       <Header />
       <WrapperProvider>
         <AuthProvider>
-          <main className="px-5">{children}</main>
+          <main>{children}</main>
         </AuthProvider>
       </WrapperProvider>
     </>

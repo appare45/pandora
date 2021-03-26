@@ -147,7 +147,7 @@ export default function ContentsUpload() {
             accept="image/*,video/*"
             onChange={() => setSelectedFiles(input.current.files)}
             ref={input}
-            className="p-1"
+            className=" w-28"
           />
         </div>
         <div className="md:flex md:flex-col items-center">

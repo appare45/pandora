@@ -29,20 +29,23 @@ const AuthProvider: FC = ({ children }) => {
       setCurrentUser(user);
       // DBを更新
       async function setDb() {
-        const data = await db.collection('users').doc(user.uid);
-        setUserData(data);
+        return await db.collection('users').doc(user.uid);
       }
       if (!!user) {
         try {
-          setDb();
+          setDb().then((data) => {
+            if (!!data && !!user) {
+              data.set(
+                {
+                  name: user.displayName,
+                  lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+              );
+            }
+          });
         } catch (error) {
           console.error(error);
-        }
-        if (!!userData && !!user) {
-          userData.set({
-            name: user.displayName,
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-          });
         }
       }
     });

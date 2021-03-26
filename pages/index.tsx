@@ -4,8 +4,13 @@ import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import JoinEvent from '../components/JoinEvent';
 import firebase from './../utils/firebase';
-import { DocumentSnapshot, FirebaseFirestore } from '@firebase/firestore-types';
+import {
+  DocumentData,
+  DocumentSnapshot,
+  FirebaseFirestore,
+} from '@firebase/firestore-types';
 import { useContext, useEffect, useState } from 'react';
+import ContentsUpload from '../components/ContentsUpload';
 
 export function AddEvent() {
   return (
@@ -22,47 +27,51 @@ export function AddEvent() {
   );
 }
 
-const EventInfo = React.memo((props: { user: firebase.User }) => {
+const EventInfo = React.memo((props: { userData: DocumentData }) => {
   const context = useContext(AuthContext);
   const db: FirebaseFirestore = context.data;
   const [currentEvent, setCurrentEvent] = useState<Object | any>();
   useEffect(() => {
-    if (!!db && !!props.user) {
-      db.collection('users')
-        .doc(props.user?.uid)
+    if (!!db && !!props.userData) {
+      db.collection('event')
+        .doc(props.userData.joinedEvent)
         .get()
-        .then((doc) => {
-          db.collection('event')
-            .doc(doc.data().joinedEvent)
-            .get()
-            .then((event) => setCurrentEvent(event.data()))
-            .catch((error) => console.error(error));
-        })
+        .then((event) => setCurrentEvent(event.data()))
         .catch((error) => console.error(error));
     } else {
-      console.error(props);
+      console.error(props.userData);
     }
-  }, [props.user]);
+  }, [props.userData]);
   return <>イベント名：{currentEvent?.name}</>;
 });
 
 const App = React.memo((props: { user: firebase.User }) => {
   const context = useContext(AuthContext);
   const db: FirebaseFirestore = context.data;
-  const [userData, setUserData] = useState<null | DocumentSnapshot>(null);
+  const [userData, setUserData] = useState<null | DocumentData>(null);
   if (!!props.user?.uid) {
     db.collection('users')
       .doc(props.user.uid)
-      .onSnapshot((user) => setUserData(user));
+      .onSnapshot(
+        (doc) => {
+          setUserData(doc.data());
+        },
+        (error) => {
+          console.info(error);
+        }
+      );
   }
   return (
     <>
       {userData !== null &&
-      userData.data()?.joinedEvent === undefined &&
+      userData?.joinedEvent === undefined &&
       !!props.user ? (
         <JoinEvent />
       ) : (
-        <EventInfo user={props.user} />
+        <>
+          <EventInfo userData={userData} />
+          <ContentsUpload />
+        </>
       )}
     </>
   );

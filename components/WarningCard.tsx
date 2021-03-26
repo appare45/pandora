@@ -11,7 +11,7 @@ export default function WarningCard(props: {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="text-yellow-200"
+          className="text-yellow-400"
         >
           <path
             strokeLinecap="round"
@@ -23,7 +23,7 @@ export default function WarningCard(props: {
       </div>
       <div>
         <p className="opacity-70 text-sm mb-0.5 md:leading-5">{props.title}</p>
-        <p className="text-xs opacity-70">{props.description}</p>
+        <p className="text-xs opacity-70">{props.description.toString()}</p>
       </div>
     </div>
   );

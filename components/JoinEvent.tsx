@@ -45,7 +45,7 @@ export default function JoinEvent() {
                     setSubmitError({
                       status: true,
                       title: '催し物に参加できませんでした',
-                      description: error,
+                      description: error.toString(),
                     })
                   );
               });
@@ -68,7 +68,7 @@ export default function JoinEvent() {
         (error) =>
           setSubmitError({
             status: true,
-            title: '謎のエラーが発生しました',
+            title: 'エラーが発生しました',
             description: error,
           });
       }

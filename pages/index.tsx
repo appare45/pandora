@@ -41,15 +41,15 @@ const EventInfo = React.memo((props: { userData: DocumentData }) => {
     }
   }, [props.userData]);
   return (
-    <form className="bg-blue-50 p-5 flex flex-col items-center justify-center">
-      <div className="w-44 h-44 bg-gray-50 rounded-full shadow-inner relative">
-        {/* アイコン画像 */}
+    <form className="bg-blue-50 p-5 flex flex-col md:flex-row items-center justify-center">
+      {/* アイコン画像 */}
+      <div className="w-44 h-44 md:w-48 md:h-48 bg-gray-50 rounded-full shadow-inner relative md:m-5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="absolute top-0 left-0 w-full h-full text-gray-200 p-4"
+          className="absolute top-0 left-0 w-full h-full text-gray-200 p-4 md:p-6"
         >
           <path
             strokeLinecap="round"
@@ -65,7 +65,7 @@ const EventInfo = React.memo((props: { userData: DocumentData }) => {
           />
         )}
         {/* 変更ボタン */}
-        <button className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 w-9 h-9 p-1.5 rounded-full">
+        <button className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 md:bottom-2 md:right-2 w-9 h-9 p-1.5 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -81,7 +81,8 @@ const EventInfo = React.memo((props: { userData: DocumentData }) => {
           </svg>
         </button>
       </div>
-      <div className="md:p-10 py-5 flex-1">
+      {/* イベント情報 */}
+      <div className="md:px-10 py-5 flex-1 md:max-w-xl">
         <div className="mb-2">
           <label htmlFor="eventTitle" className="text-xs text-gray-500">
             イベント名
@@ -120,7 +121,7 @@ const EventInfo = React.memo((props: { userData: DocumentData }) => {
               rows={5}
               id="eventDescription"
               value={currentEvent?.description}
-              className="p-0.5 bg-transparent border-2"
+              className="p-0.5 md:p-1 bg-transparent border-2 w-full"
             ></textarea>
             <button className="absolute right-1 bottom-2 w-7 h-7 p-1 text-gray-500">
               <svg

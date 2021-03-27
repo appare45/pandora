@@ -50,7 +50,6 @@ const EventInfo = React.memo((props: { userData: DocumentData }) => {
           viewBox="0 0 24 24"
           stroke="currentColor"
           className="absolute top-0 left-0 w-full h-full text-gray-200 p-4 md:p-6"
-          // Test
         >
           <path
             strokeLinecap="round"

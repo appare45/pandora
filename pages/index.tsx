@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import User_layout from '../components/User_layout';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import JoinEvent from '../components/JoinEvent';
 import firebase from './../utils/firebase';
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
-import { useContext, useEffect, useState } from 'react';
-import ContentsUpload from '../components/ContentsUpload';
+import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
 
 export function AddEvent() {
@@ -29,30 +28,32 @@ const App = React.memo((props: { user: firebase.User }) => {
   const context = useContext(AuthContext);
   const db: FirebaseFirestore = context.data;
   const [userData, setUserData] = useState<null | DocumentData>(null);
-  if (!!props.user?.uid) {
-    db.collection('users')
-      .doc(props.user.uid)
-      .onSnapshot(
-        (doc) => {
-          setUserData(doc.data());
-        },
-        (error) => {
-          console.info(error);
-        }
-      );
-  }
+  useMemo(() => {
+    if (!!props.user?.uid) {
+      db.collection('users')
+        .doc(props.user.uid)
+        .onSnapshot(
+          (doc) => {
+            setUserData(doc.data());
+          },
+          (error) => {
+            console.info(error);
+          }
+        );
+    }
+  }, [!props.user?.uid]);
+  console.info(userData);
   return (
     <>
-      {userData !== null &&
-      userData?.joinedEvent === undefined &&
-      !!props.user ? (
-        <JoinEvent />
-      ) : (
-        <>
+      {!!userData?.lastLogin &&
+        (userData !== null && userData?.joinedEvent !== undefined ? (
           <EventInfo userData={userData} />
-          <ContentsUpload />
-        </>
-      )}
+        ) : (
+          <>
+            <JoinEvent />
+            {/* <ContentsUpload /> */}
+          </>
+        ))}
     </>
   );
 });
@@ -60,7 +61,9 @@ const App = React.memo((props: { user: firebase.User }) => {
 export default function Home() {
   const context = useContext(AuthContext);
   const [user, setUser] = useState<firebase.User>();
-  useEffect(() => setUser(context.currentUser), [context]);
+  useMemo(() => {
+    setUser(context.currentUser);
+  }, [context]);
   return (
     <User_layout>
       <App user={user} />

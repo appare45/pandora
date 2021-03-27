@@ -1,4 +1,3 @@
-import 'react';
 import { useEffect, useRef, useState } from 'react';
 
 function DigitInput(props: {

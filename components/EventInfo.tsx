@@ -157,7 +157,11 @@ const eventReducer = (
   }
 ) => {
   if (data.type == 'set') {
-    return data.data;
+    const dataTemp: EventInfo = { ...data.data };
+    if (!dataTemp?.description) {
+      dataTemp.description = '';
+    }
+    return dataTemp;
   } else {
     const stateTemp: EventInfo = { ...state };
     switch (data.label) {
@@ -178,7 +182,7 @@ const eventReducer = (
 export function EventInfo(props: { userData: DocumentData }) {
   const context = useContext(AuthContext);
   const db: FirebaseFirestore = context.data;
-  const [currentEvent] = useState<Object | any>();
+  const [currentEvent, setCurrentEvent] = useState<EventInfo>();
   const [editable, setEditable] = useState<boolean>(false);
 
   const initEvent: EventInfo = {
@@ -202,6 +206,7 @@ export function EventInfo(props: { userData: DocumentData }) {
         .get()
         .then((event) => {
           dispatchTempEvent({ type: 'set', data: event.data() as EventInfo });
+          setCurrentEvent(event.data() as EventInfo);
         })
         .catch((error) => console.error(error));
     } else {
@@ -210,90 +215,92 @@ export function EventInfo(props: { userData: DocumentData }) {
   }, [!props.userData]);
 
   return (
-    <form className="bg-blue-50 p-5 flex flex-col md:flex-row items-center justify-center">
-      {/* アイコン画像 */}
-      <div className="w-44 h-44 md:w-48 md:h-48 bg-gray-50 rounded-full shadow-inner relative md:m-5">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="absolute top-0 left-0 w-full h-full text-gray-200 p-8 md:p-10"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-        {!!tempEvent?.image && (
-          <img
-            src={tempEvent?.image}
-            className="w-full h-full absolute top-0 left-0"
-          />
-        )}
-        {/* 変更ボタン */}
-        <button className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 md:bottom-2 md:right-2 w-9 h-9 p-1.5 rounded-full">
+    <form className="bg-blue-50 p-5 flex flex-col items-center justify-center">
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl">
+        {/* アイコン画像 */}
+        <div className="w-44 h-44 md:w-48 md:h-48 bg-gray-50 rounded-full shadow-inner relative md:m-5">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            className="absolute top-0 left-0 w-full h-full text-gray-200 p-8 md:p-10"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-        </button>
-      </div>
-      {/* イベント情報 */}
-      <div className="md:px-10 py-5 flex-1 md:max-w-xl">
-        <div className="mb-2">
-          <EventTitle
-            value={tempEvent?.name}
-            editable={editable}
-            edit={edit}
-            onInput={(e: string) =>
-              dispatchTempEvent({
-                label: 'title',
-                value: e,
-              })
-            }
-          />
-        </div>
-        <div>
-          <EventDescription
-            value={tempEvent?.description}
-            editable={editable}
-            edit={edit}
-            onInput={(e: string) => {
-              dispatchTempEvent({
-                label: 'description',
-                value: e,
-              });
-            }}
-          />
-        </div>
-        {editable && (
-          <div className="sm:flex w-full justify-end">
-            <Action_button>変更を申請</Action_button>
-            <ActionButtonWhite
-              enabled={editable}
-              action={(e: React.MouseEvent) => {
-                e.preventDefault();
-                setEditable(false);
-                dispatchTempEvent({ type: 'set', data: currentEvent });
-              }}
+          {!!tempEvent?.image && (
+            <img
+              src={tempEvent?.image}
+              className="w-full h-full absolute top-0 left-0"
+            />
+          )}
+          {/* 変更ボタン */}
+          <button className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 md:bottom-2 md:right-2 w-9 h-9 p-1.5 rounded-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              キャンセル
-            </ActionButtonWhite>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              />
+            </svg>
+          </button>
+        </div>
+        {/* イベント情報 */}
+        <div className="md:px-10 py-5 flex-1 md:max-w-xl">
+          <div className="mb-2">
+            <EventTitle
+              value={tempEvent?.name}
+              editable={editable}
+              edit={edit}
+              onInput={(e: string) =>
+                dispatchTempEvent({
+                  label: 'title',
+                  value: e,
+                })
+              }
+            />
           </div>
-        )}
+          <div>
+            <EventDescription
+              value={tempEvent?.description}
+              editable={editable}
+              edit={edit}
+              onInput={(e: string) => {
+                dispatchTempEvent({
+                  label: 'description',
+                  value: e,
+                });
+              }}
+            />
+          </div>
+        </div>
       </div>
+      {editable && (
+        <div className="sm:flex w-full justify-end max-w-3xl px-4">
+          <Action_button>変更を申請</Action_button>
+          <ActionButtonWhite
+            enabled={editable}
+            action={(e: React.MouseEvent) => {
+              e.preventDefault();
+              setEditable(false);
+              dispatchTempEvent({ type: 'set', data: currentEvent });
+            }}
+          >
+            キャンセル
+          </ActionButtonWhite>
+        </div>
+      )}
     </form>
   );
 }

@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Action_button = (props: {
   children: Object;
   action?: Function;
@@ -20,4 +22,4 @@ const Action_button = (props: {
   );
 };
 
-export default Action_button;
+export default React.memo(Action_button);

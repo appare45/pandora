@@ -1,22 +1,212 @@
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  RefObject,
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import { AuthContext } from '../contexts/Auth';
-export const EventInfo = React.memo((props: { userData: DocumentData }) => {
+import Action_button from './ActionButton';
+
+// イベント名
+const EventTitle = React.memo(
+  (props: {
+    value: string;
+    editable: boolean;
+    edit: Function;
+    onInput: Function;
+  }) => {
+    const ref = useRef<HTMLInputElement>();
+    return (
+      <>
+        <label htmlFor="eventTitle" className="text-xs text-gray-500">
+          イベント名
+          {props.editable && (
+            <span
+              className={
+                (ref.current.value.length > 20 ||
+                  ref.current.value.length < 1) &&
+                'text-red-400'
+              }
+            >
+              （{ref.current.value.length}/20）
+            </span>
+          )}
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            id="eventTitle"
+            value={props.value}
+            maxLength={20}
+            className="p-0.5 bg-transparent border-b-2 w-full"
+            disabled={!props.editable}
+            ref={ref}
+            onInput={() => {
+              props.onInput(ref.current.value);
+            }}
+            required
+          />
+          {!props.editable && (
+            <button
+              className="absolute right-0 bottom-0 w-7 h-7 p-1 text-gray-500"
+              onClick={(e) => {
+                e.preventDefault();
+                props.edit(ref);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </>
+    );
+  }
+);
+
+// イベント説明
+const EventDescription = React.memo(
+  (props: {
+    value: string;
+    editable: boolean;
+    edit: Function;
+    onInput: Function;
+  }) => {
+    const ref = useRef<HTMLTextAreaElement>();
+    return (
+      <>
+        <label htmlFor="eventDescription" className="text-xs text-gray-500">
+          説明
+          {props.editable && !!props.value?.length && (
+            <span className={ref.current.value.length > 150 && 'text-red-400'}>
+              （{ref.current.value.length}/150）
+            </span>
+          )}
+        </label>
+        <div className="relative">
+          <textarea
+            cols={30}
+            rows={5}
+            id="eventDescription"
+            value={props.value}
+            maxLength={150}
+            className="p-0.5 md:p-1 bg-transparent border-2 w-full"
+            disabled={!props.editable}
+            ref={ref}
+            onInput={() => props.onInput(ref.current.value)}
+          ></textarea>
+          {!props.editable && (
+            <button
+              className="absolute right-1 bottom-2 w-7 h-7 p-1 text-gray-500"
+              onClick={(e) => {
+                e.preventDefault();
+                props.edit(ref);
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </>
+    );
+  }
+);
+// 型
+interface EventInfo {
+  name: string;
+  description?: string;
+  image?: string;
+}
+
+// tempEventの更新用
+const eventReducer = (
+  state: EventInfo,
+  data: {
+    type?: 'update' | 'set';
+    data?: EventInfo;
+    label?: 'title' | 'description' | 'image';
+    value?: string;
+  }
+) => {
+  if (data.type == 'set') {
+    return data.data;
+  } else {
+    const stateTemp: EventInfo = { ...state };
+    switch (data.label) {
+      case 'title':
+        stateTemp.name = data.value;
+        return stateTemp;
+
+      case 'description':
+        stateTemp.description = data.value;
+        return stateTemp;
+
+      default:
+        break;
+    }
+  }
+};
+// イベント情報
+export function EventInfo(props: { userData: DocumentData }) {
   const context = useContext(AuthContext);
   const db: FirebaseFirestore = context.data;
-  const [currentEvent, setCurrentEvent] = useState<Object | any>();
-  useEffect(() => {
-    console.info(props.userData);
+  const [currentEvent] = useState<Object | any>();
+  const [editable, setEditable] = useState<boolean>(false);
+
+  const initEvent: EventInfo = {
+    name: 'Loading',
+  };
+
+  const [tempEvent, dispatchTempEvent] = useReducer(eventReducer, initEvent);
+  console.info('tempEvent');
+
+  // 編集開始
+  function edit(focusRef?: RefObject<HTMLInputElement | HTMLTextAreaElement>) {
+    setEditable(true);
+    if (!!focusRef) {
+      focusRef.current.focus();
+    }
+  }
+
+  useMemo(() => {
     if (!!db && !!props.userData) {
       db.collection('event')
         .doc(props.userData.joinedEvent)
         .get()
-        .then((event) => setCurrentEvent(event.data()))
+        .then((event) => {
+          dispatchTempEvent({ type: 'set', data: event.data() as EventInfo });
+        })
         .catch((error) => console.error(error));
     } else {
-      console.error(props.userData);
+      console.error(props);
     }
-  }, [props.userData]);
+  }, [!props.userData]);
   return (
     <form className="bg-blue-50 p-5 flex flex-col md:flex-row items-center justify-center">
       {/* アイコン画像 */}
@@ -61,66 +251,33 @@ export const EventInfo = React.memo((props: { userData: DocumentData }) => {
       {/* イベント情報 */}
       <div className="md:px-10 py-5 flex-1 md:max-w-xl">
         <div className="mb-2">
-          <label htmlFor="eventTitle" className="text-xs text-gray-500">
-            イベント名
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              id="eventTitle"
-              value={currentEvent?.name}
-              maxLength={20}
-              className="p-0.5 bg-transparent border-b-2 w-full"
-              disabled
-            />
-            <button className="absolute right-0 bottom-0 w-7 h-7 p-1 text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-            </button>
-          </div>
+          <EventTitle
+            value={tempEvent?.name}
+            editable={editable}
+            edit={edit}
+            onInput={(e: string) =>
+              dispatchTempEvent({
+                label: 'title',
+                value: e,
+              })
+            }
+          />
         </div>
         <div>
-          <label htmlFor="eventDescription" className="text-xs text-gray-500">
-            説明
-          </label>
-          <div className="relative">
-            <textarea
-              cols={30}
-              rows={5}
-              id="eventDescription"
-              value={currentEvent?.description}
-              maxLength={150}
-              className="p-0.5 md:p-1 bg-transparent border-2 w-full"
-            ></textarea>
-            <button className="absolute right-1 bottom-2 w-7 h-7 p-1 text-gray-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-            </button>
-          </div>
+          <EventDescription
+            value={tempEvent?.description}
+            editable={editable}
+            edit={edit}
+            onInput={(e: string) => {
+              dispatchTempEvent({
+                label: 'description',
+                value: e,
+              });
+            }}
+          />
         </div>
+        {editable && <Action_button>変更を申請</Action_button>}
       </div>
     </form>
   );
-});
+}

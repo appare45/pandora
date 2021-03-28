@@ -22,10 +22,25 @@ export default function LoginFront() {
   >(null);
 
   return (
-    <div className="flex row justify-center items-center flex-col m-0">
-      <h1>催し物管理システム</h1>
+    <div className="flex row justify-center items-center flex-col m-0 w-full h-screen">
+      <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-700 p-3">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
+      </div>
+      <p className="leading-10">ログインが必要です</p>
       <button
-        className={`flex items-center bg-gray-50 p-2 px-4 rounded shadow m-2 disabled:opacity-50 ${
+        className={`flex items-center bg-blue-50 p-2 px-4 rounded shadow m-2 disabled:opacity-50 ${
           loginStatus === undefined && 'opacity-50'
         }`}
         onClick={() => login()}
@@ -50,6 +65,7 @@ export default function LoginFront() {
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="xMidYMid"
+              className="w-4 pt-1 m-1"
             >
               <g>
                 <path
@@ -72,7 +88,7 @@ export default function LoginFront() {
             </svg>
           )}
         </div>
-        ログイン
+        Googleでログイン
       </button>
       <p></p>
     </div>

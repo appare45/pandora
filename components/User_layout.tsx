@@ -3,17 +3,17 @@ import router from 'next/router';
 import { AuthContext, AuthProvider } from '../contexts/Auth';
 import { WrapperProvider } from './../contexts/Wrapper';
 import React, { useContext, useEffect, useState } from 'react';
+import LoginFront from './login';
 
 export default function User_layout({ children }) {
+  const { currentUser } = useContext(AuthContext);
   // メモ化されたヘッダー
   const Header = React.memo(() => {
-    const { currentUser } = useContext(AuthContext);
-
     const [userMenuStatus, setUserMenuStatus] = useState(false);
 
-    useEffect(() => {
-      currentUser === null && router.push('/login');
-    }, [currentUser]);
+    // useEffect(() => {
+    //   currentUser === null && router.push('/login');
+    // }, [currentUser]);
 
     const logout = () => {
       if (!!currentUser) firebase.auth().signOut();
@@ -87,7 +87,7 @@ export default function User_layout({ children }) {
       <Header />
       <WrapperProvider>
         <AuthProvider>
-          <main>{children}</main>
+          {currentUser === null ? <LoginFront /> : <main>{children}</main>}
         </AuthProvider>
       </WrapperProvider>
     </>

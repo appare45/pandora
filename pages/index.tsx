@@ -7,6 +7,7 @@ import firebase from './../utils/firebase';
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
+import ContentsUpload from '../components/ContentsUpload';
 
 export function AddEvent() {
   return (
@@ -42,16 +43,17 @@ const App = React.memo((props: { user: firebase.User }) => {
         );
     }
   }, [!props.user?.uid]);
-  console.info(userData);
   return (
     <>
       {!!userData?.lastLogin &&
         (userData !== null && userData?.joinedEvent !== undefined ? (
-          <EventInfo userData={userData} />
+          <>
+            <EventInfo userData={userData} />
+            <ContentsUpload />
+          </>
         ) : (
           <>
             <JoinEvent />
-            {/* <ContentsUpload /> */}
           </>
         ))}
     </>

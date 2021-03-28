@@ -5,15 +5,13 @@ import { WrapperProvider } from './../contexts/Wrapper';
 import React, { useContext, useEffect, useState } from 'react';
 
 export default function User_layout({ children }) {
+  const { currentUser } = useContext(AuthContext);
+  useEffect(() => {
+    currentUser === null && router.push('/login');
+  }, [currentUser]);
   // メモ化されたヘッダー
   const Header = React.memo(() => {
-    const { currentUser } = useContext(AuthContext);
-
     const [userMenuStatus, setUserMenuStatus] = useState(false);
-
-    useEffect(() => {
-      currentUser === null && router.push('/login');
-    }, [currentUser]);
 
     const logout = () => {
       if (!!currentUser) firebase.auth().signOut();
@@ -84,12 +82,16 @@ export default function User_layout({ children }) {
 
   return (
     <>
-      <Header />
-      <WrapperProvider>
-        <AuthProvider>
-          <main>{children}</main>
-        </AuthProvider>
-      </WrapperProvider>
+      {!!currentUser && (
+        <>
+          <Header />
+          <WrapperProvider>
+            <AuthProvider>
+              <main>{children}</main>
+            </AuthProvider>
+          </WrapperProvider>
+        </>
+      )}
     </>
   );
 }

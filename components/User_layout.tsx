@@ -11,10 +11,6 @@ export default function User_layout({ children }) {
   const Header = React.memo(() => {
     const [userMenuStatus, setUserMenuStatus] = useState(false);
 
-    // useEffect(() => {
-    //   currentUser === null && router.push('/login');
-    // }, [currentUser]);
-
     const logout = () => {
       if (!!currentUser) firebase.auth().signOut();
     };

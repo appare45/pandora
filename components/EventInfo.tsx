@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { AuthContext } from '../contexts/Auth';
 import Action_button from './ActionButton';
+import ActionButtonWhite from './ActionButtonWhite';
 
 // イベント名
 const EventTitle = React.memo(
@@ -26,9 +27,9 @@ const EventTitle = React.memo(
           {props.editable && (
             <span
               className={
-                (ref.current.value.length > 20 ||
-                  ref.current.value.length < 1) &&
-                'text-red-400'
+                ref.current.value.length > 20 || ref.current.value.length < 1
+                  ? 'text-red-400'
+                  : undefined
               }
             >
               （{ref.current.value.length}/20）
@@ -137,6 +138,7 @@ const EventDescription = React.memo(
     );
   }
 );
+
 // 型
 interface EventInfo {
   name: string;
@@ -184,7 +186,6 @@ export function EventInfo(props: { userData: DocumentData }) {
   };
 
   const [tempEvent, dispatchTempEvent] = useReducer(eventReducer, initEvent);
-  console.info('tempEvent');
 
   // 編集開始
   function edit(focusRef?: RefObject<HTMLInputElement | HTMLTextAreaElement>) {
@@ -207,6 +208,7 @@ export function EventInfo(props: { userData: DocumentData }) {
       console.error(props);
     }
   }, [!props.userData]);
+
   return (
     <form className="bg-blue-50 p-5 flex flex-col md:flex-row items-center justify-center">
       {/* アイコン画像 */}
@@ -216,7 +218,7 @@ export function EventInfo(props: { userData: DocumentData }) {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          className="absolute top-0 left-0 w-full h-full text-gray-200 p-4 md:p-6"
+          className="absolute top-0 left-0 w-full h-full text-gray-200 p-8 md:p-10"
         >
           <path
             strokeLinecap="round"
@@ -225,9 +227,9 @@ export function EventInfo(props: { userData: DocumentData }) {
             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        {!!currentEvent?.image && (
+        {!!tempEvent?.image && (
           <img
-            src={currentEvent?.image}
+            src={tempEvent?.image}
             className="w-full h-full absolute top-0 left-0"
           />
         )}
@@ -276,7 +278,21 @@ export function EventInfo(props: { userData: DocumentData }) {
             }}
           />
         </div>
-        {editable && <Action_button>変更を申請</Action_button>}
+        {editable && (
+          <div className="sm:flex w-full justify-end">
+            <Action_button>変更を申請</Action_button>
+            <ActionButtonWhite
+              enabled={editable}
+              action={(e: React.MouseEvent) => {
+                e.preventDefault();
+                setEditable(false);
+                dispatchTempEvent({ type: 'set', data: currentEvent });
+              }}
+            >
+              キャンセル
+            </ActionButtonWhite>
+          </div>
+        )}
       </div>
     </form>
   );

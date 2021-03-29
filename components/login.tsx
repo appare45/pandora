@@ -22,14 +22,19 @@ export default function LoginFront() {
   >(null);
 
   return (
-    <div className="flex row justify-center items-center flex-col m-0 w-full h-screen">
-      <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-700 p-3">
+    <div
+      className="flex row justify-center items-center flex-col m-0 w-full h-screen"
+      tabIndex={0}
+    >
+      <figure className="w-16 h-16 rounded-full bg-blue-100 text-blue-700 p-3">
+        <figcaption className="sr-only">鍵のアイコン</figcaption>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
+          <title>鍵のアイコン</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -37,7 +42,7 @@ export default function LoginFront() {
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
           />
         </svg>
-      </div>
+      </figure>
       <p className="leading-10">ログインが必要です</p>
       <button
         className={`flex items-center bg-blue-50 p-2 px-4 rounded shadow m-2 disabled:opacity-50 ${
@@ -45,14 +50,17 @@ export default function LoginFront() {
         }`}
         onClick={() => login()}
         disabled={currentUser === undefined}
+        aria-label="GoogleアカウントでログインするためGoogleアカウントのログインページに遷移する"
       >
-        <div className="pr-1">
+        <figure className="pr-1">
+          <figcaption className="sr-only">Googleのロゴマーク</figcaption>
           {currentUser === undefined ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="#000000"
               className="animate-spin h-5 text-gray-900 mx-1"
+              aria-label="Googleのロゴマーク"
             >
               <rect fill="none" height="24" width="24" />
               <path d="M2.88,7.88l1.54,1.54C4.15,10.23,4,11.1,4,12c0,4.41,3.59,8,8,8s8-3.59,8-8s-3.59-8-8-8c-0.9,0-1.77,0.15-2.58,0.42 L7.89,2.89C9.15,2.32,10.54,2,12,2c5.52,0,10,4.48,10,10s-4.48,10-10,10S2,17.52,2,12C2,10.53,2.32,9.14,2.88,7.88z M7,5.5 C7,6.33,6.33,7,5.5,7S4,6.33,4,5.5S4.67,4,5.5,4S7,4.67,7,5.5z" />
@@ -67,6 +75,7 @@ export default function LoginFront() {
               preserveAspectRatio="xMidYMid"
               className="w-4 pt-1 m-1"
             >
+              <title>Googleのロゴマーク</title>
               <g>
                 <path
                   d="M255.878,133.451 C255.878,122.717 255.007,114.884 253.122,106.761 L130.55,106.761 L130.55,155.209 L202.497,155.209 C201.047,167.249 193.214,185.381 175.807,197.565 L175.563,199.187 L214.318,229.21 L217.003,229.478 C241.662,206.704 255.878,173.196 255.878,133.451"
@@ -87,7 +96,7 @@ export default function LoginFront() {
               </g>
             </svg>
           )}
-        </div>
+        </figure>
         Googleでログイン
       </button>
       <p></p>

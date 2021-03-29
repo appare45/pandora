@@ -14,17 +14,19 @@ export default function Modal(props: {
               props.onClose();
             }
           }}
+          role="dialog"
         >
           <div
             className="w-full h-full cursor-pointer absolute top-0 left-0 bg-gray-50 opacity-90"
             onClick={() => props.onClose()}
           ></div>
-          <div className="z-10 m-5 max-h-full max-w-full overflow-scroll">
+          <div className="z-10 m-5 max-h-full max-w-full overflow-y-scroll">
             {props.children}
           </div>
           <button
             className="p-2 text-red-400 flex justify-center items-center z-10 transition duration-300 hover:bg-pink-50 rounded "
             onClick={() => props.onClose()}
+            aria-label="モーダルを閉じる"
           >
             <figure className="w-5 h-5 mr-1 mt-0.5">
               <svg

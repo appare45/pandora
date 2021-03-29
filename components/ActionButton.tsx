@@ -13,6 +13,7 @@ const Action_button = (props: {
       `}
       onClick={(e) => props.action(e)}
       disabled={!props.enabled}
+      aria-label={`${props.children}を行う`}
     >
       {props.enabled == 'loading' && (
         <img src="./loading.svg" className="mx-1 animate-spin" />

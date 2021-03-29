@@ -11,10 +11,13 @@ function MenuItem(props: {
 }) {
   return (
     <Link href={props.href}>
-      <a className="px-2 py-1 flex items-center rounded hover:bg-blue-50 md:pr-10 md:transition-all">
+      <a className="px-2 py-1 flex items-center rounded hover:bg-blue-100 md:pr-10 md:transition-all">
         <figure
-          className={`w-10 h-10 md:w-8 md:h-8 p-1 m-0.5 bg-${props.color}-100 text-${props.color}-500 rounded`}
+          className={`w-10 h-10 md:w-8 md:h-8 p-1 m-0.5 bg-${props.color}-50 text-${props.color}-600 rounded`}
         >
+          <figcaption className="sr-only">
+            {props.children}のアイコン
+          </figcaption>
           {props.icon}
         </figure>
         <p className="text-xl md:text-base ml-2">{props.children}</p>
@@ -25,7 +28,7 @@ function MenuItem(props: {
 
 export default function Sidebar(props: { currentUser: firebase.User }) {
   return (
-    <div className="p-1 flex justify-center flex-col items-center md:h-full md:justify-around">
+    <nav className="p-1 flex justify-center flex-col items-center md:h-full md:justify-around">
       <ul>
         <li>
           <MenuItem
@@ -37,6 +40,7 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>家のアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -58,6 +62,7 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>チャットのアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -79,6 +84,7 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>新聞のアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -100,6 +106,7 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>?マークのアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -121,6 +128,7 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>iのアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -136,14 +144,39 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
         </li>
       </ul>
       <div
-        className={`items-center ${'flex'} sm:flex sm:static mt-2 sm:bg-transparent sm:w-auto p-3 sm:p-1`}
+        className={`items-center flex sm:static mt-2 sm:bg-transparent sm:w-auto p-3 sm:p-1`}
       >
-        <figure className="h-9 w-9 md:w-8 md:h-8 mx-3 rounded-full shadow-inner ">
-          <img
-            src={props.currentUser?.photoURL}
-            alt=""
-            className="h-full w-full rounded-full"
-          />
+        <figure className="h-9 w-9 md:w-8 md:h-8 mx-3 rounded-full shadow-inner relative overflow-hidden">
+          <figcaption className="sr-only">
+            ユーザーのプロフィール画像
+          </figcaption>
+          {!!props.currentUser?.photoURL ? (
+            <img
+              src={props.currentUser?.photoURL}
+              alt={`${props.currentUser?.displayName}のプロフィール画像`}
+              className="h-full w-full rounded-full bg-white z-0"
+            />
+          ) : (
+            <figure>
+              <figcaption className="sr-only">
+                ユーザーのプロフィール画像が表示できなかったため人のイラストを表示しています
+              </figcaption>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-full h-full absolute top-0 left-0 z-0"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </figure>
+          )}
         </figure>
         <div className="mx-1">
           <ActionButtonWhite
@@ -158,6 +191,6 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
           </ActionButtonWhite>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

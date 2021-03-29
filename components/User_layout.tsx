@@ -1,5 +1,4 @@
-import firebase from '../utils/firebase';
-import { AuthContext, AuthProvider } from '../contexts/Auth';
+import { AuthContext } from '../contexts/Auth';
 import React, { useContext, useState } from 'react';
 import LoginFront from './login';
 import Head from 'next/head';
@@ -17,6 +16,8 @@ export default function User_layout({ children }) {
       <>
         <Head>
           <meta name="robots" content="noindex" />
+
+          <title>{!currentUser ? 'ログイン' : 'Pandora'}</title>
         </Head>
         <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
           <h1 className="text-2xl py-3 font-bold">

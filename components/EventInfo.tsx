@@ -59,6 +59,7 @@ const EventTitle = React.memo(
                 e.preventDefault();
                 props.edit(ref);
               }}
+              aria-label="企画名を編集"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -66,6 +67,7 @@ const EventTitle = React.memo(
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>鉛筆のアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -119,6 +121,7 @@ const EventDescription = React.memo(
                 e.preventDefault();
                 props.edit(ref);
               }}
+              aria-label="企画の説明を編集"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -126,6 +129,7 @@ const EventDescription = React.memo(
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>鉛筆のアイコン</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -189,26 +193,33 @@ const EventImage = React.memo(
         <Modal display={modalState} onClose={() => setModalState(false)}>
           <ContentsUpload />
         </Modal>
-        <div className="w-44 h-44 md:w-48 md:h-48 bg-gray-50 rounded-full shadow-inner relative md:m-5">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="absolute top-0 left-0 w-full h-full text-gray-200 p-8 md:p-10"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          {!!props?.value && (
+        <div className="w-44 h-44 md:w-48 md:h-48 bg-gray-50 rounded-full shadow-inner relative md:m-5 ">
+          {!!props?.value ? (
             <img
               src={props?.value}
               className="w-full h-full absolute top-0 left-0"
             />
+          ) : (
+            <figure>
+              <figcaption className="sr-only">
+                企画の画像が未設定です
+              </figcaption>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="absolute top-0 left-0 w-full h-full text-gray-200 p-8 md:p-10"
+              >
+                <title>写真のアイコン</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </figure>
           )}
           {/* 変更ボタン */}
           <button
@@ -218,6 +229,7 @@ const EventImage = React.memo(
               setModalState(true);
               props.edit();
             }}
+            aria-label="画像を変更"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -225,6 +237,7 @@ const EventImage = React.memo(
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
+              <title>鉛筆のアイコン</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -276,7 +289,8 @@ export function EventInfo(props: { userData: DocumentData }) {
   }, [!props.userData]);
 
   return (
-    <form className=" p-5 flex flex-col items-center justify-center z-0">
+    <form className=" p-5 flex flex-col items-center justify-center z-0 border-b-4 border-gray-100">
+      <h2 className="sr-only">イベント情報</h2>
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl">
         <EventImage
           value={tempEvent?.image}

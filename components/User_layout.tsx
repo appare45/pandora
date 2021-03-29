@@ -1,9 +1,8 @@
 import firebase from '../utils/firebase';
-import router from 'next/router';
 import { AuthContext, AuthProvider } from '../contexts/Auth';
-import { WrapperProvider } from './../contexts/Wrapper';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import LoginFront from './login';
+import Head from 'next/head';
 
 export default function User_layout({ children }) {
   const { currentUser } = useContext(AuthContext);
@@ -16,8 +15,11 @@ export default function User_layout({ children }) {
     };
     return (
       <>
+        <Head>
+          <meta name="robots" content="noindex" />
+        </Head>
         {!!currentUser && (
-          <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-10">
+          <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
             <h1 className="text-2xl py-3 font-bold">Pandora</h1>
             <button
               className="w-11 h-11 m-1 p-1 sm:hidden"
@@ -81,11 +83,9 @@ export default function User_layout({ children }) {
   return (
     <>
       <Header />
-      <WrapperProvider>
-        <AuthProvider>
-          {currentUser === null ? <LoginFront /> : <main>{children}</main>}
-        </AuthProvider>
-      </WrapperProvider>
+      <AuthProvider>
+        {currentUser === null ? <LoginFront /> : <main>{children}</main>}
+      </AuthProvider>
     </>
   );
 }

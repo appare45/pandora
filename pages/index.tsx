@@ -7,6 +7,7 @@ import firebase from './../utils/firebase';
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
+import Sidebar from '../components/Sidebar';
 
 export function AddEvent() {
   return (

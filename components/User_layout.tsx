@@ -3,6 +3,8 @@ import { AuthContext, AuthProvider } from '../contexts/Auth';
 import React, { useContext, useState } from 'react';
 import LoginFront from './login';
 import Head from 'next/head';
+import Sidebar from './Sidebar';
+import Modal from './Modal';
 
 export default function User_layout({ children }) {
   const { currentUser } = useContext(AuthContext);
@@ -50,32 +52,19 @@ export default function User_layout({ children }) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M4 6h16M4 12h16M4 18h16"
                   />
                 </svg>
               )}
             </button>
-            {!!currentUser && (
-              <div
-                className={`items-center ${
-                  userMenuStatus ? 'flex' : 'hidden'
-                } sm:flex absolute sm:static top-16 left-0 bg-gray-100 sm:bg-transparent w-full sm:w-auto p-3 sm:p-1`}
-              >
-                <figure className="h-9 w-9 mx-3">
-                  <img
-                    src={currentUser.photoURL}
-                    alt=""
-                    className="h-full w-full rounded-full"
-                  />
-                </figure>
-                <div className="mx-1">
-                  <p>{!!currentUser && currentUser.displayName}</p>
-                  <button onClick={() => logout()}>ログアウト</button>
-                </div>
-              </div>
-            )}
           </header>
         )}
+        <Modal
+          display={userMenuStatus}
+          onClose={() => setUserMenuStatus(false)}
+        >
+          <Sidebar currentUser={currentUser} />
+        </Modal>
       </>
     );
   });

@@ -25,7 +25,7 @@ const AuthProvider: FC = ({ children }) => {
       setCurrentUser(user);
       // DBを更新
       async function setDb() {
-        return await db.collection('users').doc(user.uid);
+        return db.collection('user').doc(user.uid);
       }
       if (!!user) {
         try {
@@ -33,7 +33,6 @@ const AuthProvider: FC = ({ children }) => {
             if (!!data && !!user) {
               data.set(
                 {
-                  name: user.displayName,
                   lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                 },
                 { merge: true }

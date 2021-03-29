@@ -31,7 +31,7 @@ const App = React.memo((props: { user: firebase.User }) => {
   const [userData, setUserData] = useState<null | DocumentData>(null);
   useMemo(() => {
     if (!!props.user?.uid) {
-      db.collection('users')
+      db.collection('user')
         .doc(props.user.uid)
         .onSnapshot(
           (doc) => {
@@ -43,18 +43,14 @@ const App = React.memo((props: { user: firebase.User }) => {
         );
     }
   }, [!props.user?.uid]);
+
   return (
     <>
-      {!!userData?.lastLogin &&
-        (userData !== null && userData?.joinedEvent !== undefined ? (
-          <>
-            <EventInfo userData={userData} />
-          </>
-        ) : (
-          <>
-            <JoinEvent />
-          </>
-        ))}
+      {!!userData?.lastLogin && (
+        <>
+          <EventInfo userData={userData} />
+        </>
+      )}
     </>
   );
 });

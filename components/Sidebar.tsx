@@ -11,13 +11,13 @@ function MenuItem(props: {
 }) {
   return (
     <Link href={props.href}>
-      <a className="px-2 py-1 flex items-center rounded">
+      <a className="px-2 py-1 flex items-center rounded hover:bg-blue-50 md:pr-10 md:transition-all">
         <figure
-          className={`w-10 h-10 p-1 m-0.5 bg-${props.color}-100 text-${props.color}-500 rounded`}
+          className={`w-10 h-10 md:w-8 md:h-8 p-1 m-0.5 bg-${props.color}-100 text-${props.color}-500 rounded`}
         >
           {props.icon}
         </figure>
-        <p className="text-xl ml-2">{props.children}</p>
+        <p className="text-xl md:text-base ml-2">{props.children}</p>
       </a>
     </Link>
   );
@@ -25,7 +25,7 @@ function MenuItem(props: {
 
 export default function Sidebar(props: { currentUser: firebase.User }) {
   return (
-    <div className="p-1 flex justify-center flex-col items-center">
+    <div className="p-1 flex justify-center flex-col items-center md:h-full md:justify-around">
       <ul>
         <li>
           <MenuItem
@@ -69,6 +69,27 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
             href="./contact"
           >
             お問い合わせ
+          </MenuItem>
+          <MenuItem
+            color="purple"
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                />
+              </svg>
+            }
+            href="./news"
+          >
+            お知らせ
           </MenuItem>
           <MenuItem
             color="pink"
@@ -115,11 +136,11 @@ export default function Sidebar(props: { currentUser: firebase.User }) {
         </li>
       </ul>
       <div
-        className={`items-center ${'flex'} sm:flex sm:static mt-2 sm:bg-transparent w-full sm:w-auto p-3 sm:p-1`}
+        className={`items-center ${'flex'} sm:flex sm:static mt-2 sm:bg-transparent sm:w-auto p-3 sm:p-1`}
       >
-        <figure className="h-9 w-9 mx-3 rounded-full shadow-inner ">
+        <figure className="h-9 w-9 md:w-8 md:h-8 mx-3 rounded-full shadow-inner ">
           <img
-            src={props.currentUser.photoURL}
+            src={props.currentUser?.photoURL}
             alt=""
             className="h-full w-full rounded-full"
           />

@@ -23,7 +23,7 @@ export default function Modal(props: {
             {props.children}
           </div>
           <button
-            className="p-2 text-red-300 font-bold text-sm flex justify-center items-center z-10"
+            className="p-2 text-red-400 flex justify-center items-center z-10 transition duration-300 hover:bg-pink-50 rounded "
             onClick={() => props.onClose()}
           >
             <figure className="w-5 h-5 mr-1 mt-0.5">
@@ -41,7 +41,7 @@ export default function Modal(props: {
                 />
               </svg>
             </figure>
-            <p>キャンセル</p>
+            <p>閉じる</p>
           </button>
         </div>
       )}

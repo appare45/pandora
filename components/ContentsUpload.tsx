@@ -125,7 +125,7 @@ export default function ContentsUpload() {
 
   return (
     <ActionCard>
-      <div className="w-full">
+      <div className="w-full md:flex md:flex-col justify-end">
         <div className="text-gray-500 flex justify-center p-3 flex-col items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"

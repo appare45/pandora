@@ -212,7 +212,7 @@ const EventImage = React.memo(
           )}
           {/* 変更ボタン */}
           <button
-            className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 md:bottom-2 md:right-2 w-9 h-9 p-1.5 rounded-full"
+            className="bg-gray-50 border text-gray-600 border-gray-200 absolute bottom-1 right-1 md:bottom-2 md:right-2 w-9 h-9 p-1.5 rounded-full hover:bg-gray-100 transition"
             onClick={(e) => {
               e.preventDefault();
               setModalState(true);
@@ -276,7 +276,7 @@ export function EventInfo(props: { userData: DocumentData }) {
   }, [!props.userData]);
 
   return (
-    <form className="bg-blue-50 p-5 flex flex-col items-center justify-center z-0">
+    <form className=" p-5 flex flex-col items-center justify-center z-0">
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl">
         <EventImage
           value={tempEvent?.image}

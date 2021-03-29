@@ -7,7 +7,6 @@ import firebase from './../utils/firebase';
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
-import Sidebar from '../components/Sidebar';
 
 export function AddEvent() {
   return (
@@ -48,6 +47,14 @@ const App = React.memo((props: { user: firebase.User }) => {
       {!!userData?.lastLogin &&
         (userData !== null && userData?.joinedEvent !== undefined ? (
           <>
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
+            <EventInfo userData={userData} />
             <EventInfo userData={userData} />
           </>
         ) : (

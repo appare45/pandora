@@ -1,8 +1,16 @@
+import { useEffect, useRef } from 'react';
+
 export default function Modal(props: {
   children: JSX.Element;
   display: boolean;
   onClose: Function;
 }) {
+  const modalRef = useRef<HTMLDivElement>();
+  useEffect(() => {
+    if (props.display) {
+      modalRef.current.focus();
+    }
+  });
   return (
     <>
       {props.display && (
@@ -14,6 +22,7 @@ export default function Modal(props: {
               props.onClose();
             }
           }}
+          ref={modalRef}
           role="dialog"
         >
           <div

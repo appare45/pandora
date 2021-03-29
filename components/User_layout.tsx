@@ -22,7 +22,7 @@ export default function User_layout({ children }) {
         <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
           <h1 className="text-2xl py-3 font-bold">
             <Link href="/">
-              <a>Pandora</a>
+              <a>🐍Pandora</a>
             </Link>
           </h1>
           <button

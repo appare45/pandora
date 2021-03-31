@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
-import User_layout from '../components/User_layout';
+import User_layout from './../layouts/User';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
-import JoinEvent from '../components/JoinEvent';
 import firebase from './../utils/firebase';
 import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
-import Head from 'next/head';
+import { getUser } from '../repositories/User';
+import { UserData } from '../entities/User';
 
 export function AddEvent() {
   return (
@@ -27,20 +27,23 @@ export function AddEvent() {
 // 表示するメインの部分
 const App = React.memo((props: { user: firebase.User }) => {
   const context = useContext(AuthContext);
-  const db: FirebaseFirestore = context.data;
-  const [userData, setUserData] = useState<null | DocumentData>(null);
+  const db: FirebaseFirestore = context.firestore;
+  const [userData, setUserData] = useState<null | UserData>(null);
   useMemo(() => {
     if (!!props.user?.uid) {
-      db.collection('user')
-        .doc(props.user.uid)
-        .onSnapshot(
-          (doc) => {
-            setUserData(doc.data());
-          },
-          (error) => {
-            console.info(error);
-          }
-        );
+      // db.collection('user')
+      //   .doc(props.user.uid)
+      //   .onSnapshot(
+      //     (doc) => {
+      //       setUserData(doc.data());
+      //     },
+      //     (error) => {
+      //       console.info(error);
+      //     }
+      //   );
+      getUser(props.user.uid).then((user: UserData) => {
+        setUserData(user);
+      });
     }
   }, [!props.user?.uid]);
 

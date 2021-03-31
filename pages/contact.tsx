@@ -1,4 +1,4 @@
-import User_layout from '../components/User_layout';
+import User_layout from '../layouts/User';
 
 export default function Playground() {
   return (

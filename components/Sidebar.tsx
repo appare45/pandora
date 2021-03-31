@@ -29,8 +29,9 @@ function MenuItem(props: {
 
 export default function Sidebar(props: {
   currentUser: firebase.User;
-  currentOrg?: OrgData;
+  currentOrg: OrgData;
 }) {
+  console.info(props.currentOrg);
   return (
     <nav className="p-1 flex justify-center flex-col items-center md:h-full md:justify-around">
       <ul>
@@ -220,7 +221,9 @@ export default function Sidebar(props: {
                 />
               </svg>
             </figure>
-            <div className="mx-1">{props.currentOrg?.name}</div>
+            <div className="mx-1 p-1 w-24 truncate">
+              {props.currentOrg?.name}
+            </div>
           </div>
         )}
       </div>

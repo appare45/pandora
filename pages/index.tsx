@@ -3,7 +3,6 @@ import User_layout from './../layouts/User';
 import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import firebase from './../utils/firebase';
-import { DocumentData, FirebaseFirestore } from '@firebase/firestore-types';
 import { useContext, useState } from 'react';
 import { EventInfo } from '../components/EventInfo';
 import { getUser } from '../repositories/User';
@@ -26,21 +25,9 @@ export function AddEvent() {
 
 // 表示するメインの部分
 const App = React.memo((props: { user: firebase.User }) => {
-  const context = useContext(AuthContext);
-  const db: FirebaseFirestore = context.firestore;
   const [userData, setUserData] = useState<null | UserData>(null);
   useMemo(() => {
     if (!!props.user?.uid) {
-      // db.collection('user')
-      //   .doc(props.user.uid)
-      //   .onSnapshot(
-      //     (doc) => {
-      //       setUserData(doc.data());
-      //     },
-      //     (error) => {
-      //       console.info(error);
-      //     }
-      //   );
       getUser(props.user.uid).then((user: UserData) => {
         setUserData(user);
       });

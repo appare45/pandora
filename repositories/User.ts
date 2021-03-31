@@ -9,7 +9,7 @@ export async function getUser(id: string): Promise<UserData> {
     .withConverter(userDataConverter)
     .doc(id)
     .get()
-    .then((user: firebase.firestore.DocumentSnapshot<UserData>) => {
+    .then((user) => {
       return user.data();
     })
     .catch((error) => {

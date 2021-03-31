@@ -6,7 +6,7 @@ export interface OrgUser {
 }
 
 export interface MediaData {
-  public: boolean;
+  isPublic: boolean;
   ref: firebase.storage.Reference;
   onFace?: boolean;
   checked: null | 'committee' | 'teacher';
@@ -16,6 +16,11 @@ export interface MediaData {
   teacher: firebase.firestore.CollectionReference<OrgUser>;
 }
 
+export interface EventArticleData {
+  isPublic: boolean;
+  title: string;
+  content: string;
+}
 export interface EventData {
   name: string;
   description: string;
@@ -28,3 +33,26 @@ export interface OrgData {
   event: firebase.firestore.CollectionReference<OrgUser>;
   domain: string;
 }
+
+export const organizationDataConverter: firebase.firestore.FirestoreDataConverter<OrgData> = {
+  toFirestore(organization: OrgData): firebase.firestore.DocumentData {
+    return {
+      name: organization.name,
+      user: organization.user,
+      event: organization.event,
+      domain: organization.domain,
+    };
+  },
+  fromFirestore(
+    snapshot: firebase.firestore.QueryDocumentSnapshot,
+    options?: firebase.firestore.SnapshotOptions
+  ): OrgData {
+    const data = snapshot.data(options)!;
+    return {
+      name: data?.name,
+      user: data?.user,
+      event: data?.event,
+      domain: data?.domain,
+    };
+  },
+};

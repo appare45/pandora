@@ -1,22 +1,30 @@
 import { AuthContext } from '../contexts/Auth';
-import React, { useContext, useState } from 'react';
-import LoginFront from './login';
+import React, { useContext, useReducer, useState } from 'react';
+import LoginFront from '../components/login';
 import Head from 'next/head';
 import Link from 'next/link';
-import Sidebar from './Sidebar';
-import Modal from './Modal';
+import Sidebar from '../components/Sidebar';
+import Modal from '../components/Modal';
+import { OrgData } from '../entities/Organization';
 
 export default function User_layout({ children }) {
-  const { currentUser } = useContext(AuthContext);
-  // メモ化されたヘッダー
+  const { currentUser, firestore } = useContext(AuthContext);
   const Header = React.memo(() => {
+    const [currentOrg, setCurrentOrg] = useState<OrgData>();
     const [userMenuStatus, setUserMenuStatus] = useState(false);
+
+    // firestore
+    //   .collection(currentUser.uid)
+    //   .doc('user')
+    //   .get()
+    //   .then((data) => {
+    //     firestore.doc('organization').collection(data.data().organization);
+    //   });
 
     return (
       <>
         <Head>
           <meta name="robots" content="noindex" />
-
           <title>{!currentUser ? 'ログイン' : 'Pandora'}</title>
         </Head>
         <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
@@ -64,11 +72,12 @@ export default function User_layout({ children }) {
           display={userMenuStatus}
           onClose={() => setUserMenuStatus(false)}
         >
-          <Sidebar currentUser={currentUser} />
+          <Sidebar currentUser={currentUser} currentOrg={currentOrg} />
         </Modal>
       </>
     );
   });
+  // メモ化されたヘッダー
 
   return (
     <>
@@ -83,7 +92,10 @@ export default function User_layout({ children }) {
                 <Sidebar currentUser={currentUser} />
               </div>
             </div>
-            <div className="md:col-start-2 md:col-end-6"> {children}</div>
+            <div className="md:col-start-2 md:col-end-6 max-w-full">
+              {' '}
+              {children}
+            </div>
           </main>
         </>
       )}

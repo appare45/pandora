@@ -1,15 +1,16 @@
 import { FC, createContext, useEffect, useState } from 'react';
+import { setUser } from '../repositories/User';
 
 import firebase, { app } from '../utils/firebase';
 
 export type AuthContextProps = {
   currentUser: firebase.User | null | undefined;
-  data: firebase.firestore.Firestore | null | undefined;
+  firestore: firebase.firestore.Firestore | null | undefined;
 };
 
 const AuthContext = createContext<AuthContextProps>({
   currentUser: undefined,
-  data: undefined,
+  firestore: undefined,
 });
 
 const AuthProvider: FC = ({ children }) => {
@@ -24,30 +25,20 @@ const AuthProvider: FC = ({ children }) => {
       // 現在のユーザーを設定
       setCurrentUser(user);
       // DBを更新
-      async function setDb() {
-        return db.collection('user').doc(user.uid);
-      }
-      if (!!user) {
-        try {
-          setDb().then((data) => {
-            if (!!data && !!user) {
-              data.set(
-                {
-                  lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                },
-                { merge: true }
-              );
-            }
-          });
-        } catch (error) {
-          console.error(error);
-        }
+      if (!!user?.uid) {
+        setUser(
+          user.uid,
+          {
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
       }
     });
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser: currentUser, data: db }}>
+    <AuthContext.Provider value={{ currentUser: currentUser, firestore: db }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,6 @@ import { AuthContext } from '../contexts/Auth';
 import '../components/ActionButton';
 import firebase from './../utils/firebase';
 import { useContext, useState } from 'react';
-import { EventInfo } from '../components/EventInfo';
 import { getUser } from '../repositories/User';
 import { UserData } from '../entities/User';
 
@@ -36,11 +35,7 @@ const App = React.memo((props: { user: firebase.User }) => {
 
   return (
     <>
-      {!!userData?.lastLogin && (
-        <>
-          <EventInfo userData={userData} />
-        </>
-      )}
+      {/* {!!userData?.lastLogin && <><EventInfo userData={userData} /></>} */}
     </>
   );
 });

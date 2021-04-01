@@ -1,8 +1,9 @@
 import firebase from 'firebase';
 export interface OrgUser {
-  name: string;
-  joinedEvents: string[];
-  role: ('member' | 'host' | 'committee' | 'teacher')[];
+  name?: string;
+  joinedEvents?: string[];
+  role?: 'member' | 'host' | 'committee' | 'teacher';
+  lastLogin?: firebase.firestore.FieldValue;
 }
 
 export interface MediaData {
@@ -53,6 +54,32 @@ export const organizationDataConverter: firebase.firestore.FirestoreDataConverte
       user: data?.user,
       event: data?.event,
       domain: data?.domain,
+    };
+  },
+};
+
+export const organizationUserDataConverter: firebase.firestore.FirestoreDataConverter<OrgUser> = {
+  toFirestore(organizationUser: OrgUser): firebase.firestore.DocumentData {
+    if (!!organizationUser) {
+      console.info(organizationUser);
+      return {
+        name: !organizationUser?.name ? organizationUser.name : '',
+        joinedEvents: !organizationUser?.joinedEvents
+          ? organizationUser.joinedEvents
+          : [],
+        role: organizationUser?.role,
+      };
+    }
+  },
+  fromFirestore(
+    snapshot: firebase.firestore.QueryDocumentSnapshot,
+    options?: firebase.firestore.SnapshotOptions
+  ): OrgUser {
+    const data = snapshot.data(options)!;
+    return {
+      name: data.name,
+      joinedEvents: data.joinedEvents,
+      role: data.role,
     };
   },
 };

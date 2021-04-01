@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import firebase from '../utils/firebase';
-import { OrgData } from '../entities/Organization';
+import { OrgData, OrgUser } from '../entities/Organization';
 import ActionButtonWhite from './ActionButtonWhite';
 
 function MenuItem(props: {
@@ -30,8 +30,8 @@ function MenuItem(props: {
 export default function Sidebar(props: {
   currentUser: firebase.User;
   currentOrg: OrgData;
+  currentOrgUser: OrgUser;
 }) {
-  console.info(props.currentOrg);
   return (
     <nav className="p-1 flex justify-center flex-col items-center md:h-full md:justify-around">
       <ul>
@@ -202,7 +202,16 @@ export default function Sidebar(props: {
           <div
             className={`items-center flex sm:static mt-1 sm:mt-0 sm:bg-transparent sm:w-auto sm:p-0`}
           >
-            <figure className="h-9 w-9 md:w-8 md:h-8 mx-3 rounded-full text-gray-500 shadow-inner p-0.5 relative overflow-hidden">
+            <figure
+              className={`h-9 w-9 md:w-8 md:h-8 mx-3 rounded-full text-gray-500 shadow-inner p-0.5 relative overflow-hidden ${
+                props.currentOrgUser?.role == 'host'
+                  ? ' bg-yellow-400'
+                  : ' bg-whiteƒ'
+              }`}
+              title={`${
+                props.currentOrgUser?.role == 'host' && '管理者'
+              }としてログイン中`}
+            >
               <figcaption className="sr-only">帽子の画像</figcaption>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

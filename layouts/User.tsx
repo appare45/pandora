@@ -1,5 +1,5 @@
 import { AuthContext } from '../contexts/Auth';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import LoginFront from '../components/login';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -9,9 +9,45 @@ import {
   OrganizationContext,
   OrganizationProvider,
 } from '../contexts/Organization';
+import ActionCard from '../components/ActionCard';
+import ActionButton from '../components/ActionButton';
+
+function JoinOrganization() {
+  const [enabled, setEnabled] = useState<boolean>(false);
+  let code: string;
+  function updateCode() {
+    code = input.current.value;
+    if (input.current.value.length > 0) {
+      setEnabled(true);
+    } else {
+      setEnabled(false);
+    }
+  }
+  const input = useRef<HTMLInputElement>();
+  return (
+    <Modal display={true} blockClose>
+      <ActionCard>
+        <div>
+          <p className="text-lg font-medium">組織コードを入力</p>
+          <p className="text-sm">
+            事前に伝えられている組織コードを <br />
+            入力してください
+          </p>
+          <input
+            type="text"
+            className="my-2 w-full rounded p-1 font-mono"
+            ref={input}
+            onChange={() => updateCode()}
+          />
+          <ActionButton enabled={enabled}>参加</ActionButton>
+        </div>
+      </ActionCard>
+    </Modal>
+  );
+}
 
 function OrganizationUserLayout({ children }) {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, currentUserData } = useContext(AuthContext);
   const { currentOrganization, curretnOrganizationUser } = useContext(
     OrganizationContext
   );
@@ -44,64 +80,72 @@ function OrganizationUserLayout({ children }) {
 }
 
 export default function User_layout({ children }) {
-  const { currentUser } = useContext(AuthContext);
-
+  const { currentUser, currentUserData } = useContext(AuthContext);
   const [userMenuStatus, setUserMenuStatus] = useState(false);
-
   return (
     <>
       {currentUser === null ? (
         <LoginFront />
       ) : (
         <>
-          <Head>
-            <meta name="robots" content="noindex" />
-            <title>{!currentUser ? 'ログイン' : 'Pandora'}</title>
-          </Head>
-          <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
-            <h1 className="text-2xl py-3 font-bold">
-              <Link href="/">
-                <a>🐍Pandora</a>
-              </Link>
-            </h1>
-            <button
-              className="w-11 h-11 m-1 p-1 sm:hidden"
-              onClick={() => setUserMenuStatus(!userMenuStatus)}
-            >
-              {userMenuStatus ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+          {currentUserData !== undefined && (
+            <>
+              {!currentUserData?.joinedOrgId ? (
+                <JoinOrganization />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <>
+                  <Head>
+                    <meta name="robots" content="noindex" />
+                    <title>{!currentUser ? 'ログイン' : 'Pandora'}</title>
+                  </Head>
+                  <header className="w-full shadow flex items-center justify-between p-5 py-1 relative z-50">
+                    <h1 className="text-2xl py-3 font-bold">
+                      <Link href="/">
+                        <a>🐍Pandora</a>
+                      </Link>
+                    </h1>
+                    <button
+                      className="w-11 h-11 m-1 p-1 sm:hidden"
+                      onClick={() => setUserMenuStatus(!userMenuStatus)}
+                    >
+                      {userMenuStatus ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 6h16M4 12h16M4 18h16"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  </header>
+                  <OrganizationProvider>
+                    <OrganizationUserLayout>{children}</OrganizationUserLayout>
+                  </OrganizationProvider>
+                </>
               )}
-            </button>
-          </header>
-          <OrganizationProvider>
-            <OrganizationUserLayout>{children}</OrganizationUserLayout>
-          </OrganizationProvider>
+            </>
+          )}
         </>
       )}
     </>

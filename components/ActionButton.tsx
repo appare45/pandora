@@ -7,7 +7,7 @@ const Action_button = (props: {
 }) => {
   return (
     <button
-      className={`flex w-full md:w-auto items-center justify-center bg-blue-400 h-10 px-3 text-sm shadow-sm rounded-md m-1  whitespace-nowrap ${
+      className={`flex w-full items-center justify-center bg-blue-200 text-blue-700 h-10 md:h-9 text-sm rounded-md  whitespace-nowrap ${
         !props.enabled && 'opacity-50 cursor-not-allowed'
       } ${props.enabled == 'loading' && 'opacity-50 cursor-wait'}
       `}

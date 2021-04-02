@@ -3,11 +3,11 @@ import { OrgData, OrgUser } from '../entities/Organization';
 import {
   getOrganization,
   getOrganizationUser,
+  searchOrganization,
   setOrganizationUser,
 } from '../repositories/Organization';
 import { getUser } from '../repositories/User';
 import { AuthContext } from './Auth';
-import firebase from './../utils/firebase';
 
 export type OrganizationContextProps = {
   currentOrganization: OrgData;
@@ -32,31 +32,28 @@ const OrganizationProvider: FC = ({ children }) => {
       getUser(User.uid).then((user) => {
         if (!!user?.joinedOrgId) {
           // 組織のユーザーを設定
-          setOrganizationUser(
-            user.joinedOrgId,
-            User.uid,
-            {
-              name: User.displayName,
-              lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true }
-          ).then(() => {
-            getOrganizationUser(user.joinedOrgId, User.uid).then((orgUser) => {
-              setCurrentOrganizationUser(orgUser);
-              if (!orgUser?.role) {
-                setOrganizationUser(
-                  user.joinedOrgId,
-                  User.uid,
-                  {
-                    role: 'member',
-                  },
-                  { merge: true }
+          getOrganizationUser(user.joinedOrgId, User.uid).then((orgUser) => {
+            setCurrentOrganizationUser(orgUser);
+            if (!orgUser?.role) {
+              setOrganizationUser(
+                user.joinedOrgId,
+                User.uid,
+                {
+                  name: User.displayName,
+                  role: 'member',
+                },
+                { merge: true }
+              ).then(() => {
+                getOrganizationUser(user.joinedOrgId, User.uid).then(
+                  (orgUser) => {
+                    setCurrentOrganizationUser(orgUser);
+                  }
                 );
-              }
+              });
+            }
+            getOrganization(user.joinedOrgId).then((organization: OrgData) => {
+              setCurrentOrganization(organization);
             });
-          });
-          getOrganization(user.joinedOrgId).then((organization: OrgData) => {
-            setCurrentOrganization(organization);
           });
         }
       });

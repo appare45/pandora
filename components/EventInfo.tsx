@@ -8,8 +8,8 @@ import React, {
   useState,
 } from 'react';
 import { AuthContext } from '../contexts/Auth';
+import ActionButton from './ActionButton';
 import Action_button from './ActionButton';
-import ActionButtonWhite from './ActionButtonWhite';
 import ContentsUpload from './ContentsUpload';
 import Modal from './Modal';
 
@@ -330,8 +330,9 @@ export function EventInfo(props: { userData: DocumentData }) {
       {editable && (
         <div className="sm:flex w-full justify-end max-w-3xl px-4">
           <Action_button>変更を申請</Action_button>
-          <ActionButtonWhite
+          <ActionButton
             enabled={editable}
+            color="gray"
             action={(e: React.MouseEvent) => {
               e.preventDefault();
               setEditable(false);
@@ -339,7 +340,7 @@ export function EventInfo(props: { userData: DocumentData }) {
             }}
           >
             キャンセル
-          </ActionButtonWhite>
+          </ActionButton>
         </div>
       )}
     </form>

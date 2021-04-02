@@ -1,7 +1,6 @@
 import DigitInput from './DigitInput';
 import ActionCard from './ActionCard';
 import ActionButton from './ActionButton';
-
 import { useState } from 'react';
 import { AuthContext } from '../contexts/Auth';
 import { FirebaseFirestore } from '@firebase/firestore-types';

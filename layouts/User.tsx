@@ -46,16 +46,22 @@ function JoinOrganization() {
   );
 }
 
-function OrganizationUserLayout({ children }) {
-  const { currentUser, currentUserData } = useContext(AuthContext);
+function OrganizationUserLayout(props: {
+  userMenuStatus: boolean;
+  setUserMenuStatus: Function;
+  children: Object;
+}) {
+  const { currentUser } = useContext(AuthContext);
   const { currentOrganization, curretnOrganizationUser } = useContext(
     OrganizationContext
   );
-  const [userMenuStatus, setUserMenuStatus] = useState(false);
 
   return (
     <>
-      <Modal display={userMenuStatus} onClose={() => setUserMenuStatus(false)}>
+      <Modal
+        display={props.userMenuStatus}
+        onClose={() => props.setUserMenuStatus(false)}
+      >
         <Sidebar
           currentUser={currentUser}
           currentOrg={currentOrganization}
@@ -73,7 +79,9 @@ function OrganizationUserLayout({ children }) {
             />
           </div>
         </div>
-        <div className="md:col-start-2 md:col-end-6 max-w-full">{children}</div>
+        <div className="md:col-start-2 md:col-end-6 max-w-full">
+          {props.children}
+        </div>
       </main>
     </>
   );
@@ -81,7 +89,7 @@ function OrganizationUserLayout({ children }) {
 
 export default function User_layout({ children }) {
   const { currentUser, currentUserData } = useContext(AuthContext);
-  const [userMenuStatus, setUserMenuStatus] = useState(false);
+  const [userMenuStatus, setUserMenuStatus] = useState<boolean>(false);
   return (
     <>
       {currentUser === null ? (
@@ -140,7 +148,12 @@ export default function User_layout({ children }) {
                     </button>
                   </header>
                   <OrganizationProvider>
-                    <OrganizationUserLayout>{children}</OrganizationUserLayout>
+                    <OrganizationUserLayout
+                      userMenuStatus={userMenuStatus}
+                      setUserMenuStatus={setUserMenuStatus}
+                    >
+                      {children}
+                    </OrganizationUserLayout>
                   </OrganizationProvider>
                 </>
               )}

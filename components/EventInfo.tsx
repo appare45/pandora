@@ -255,7 +255,7 @@ const EventImage = React.memo(
 // イベント情報
 export function EventInfo(props: { userData: DocumentData }) {
   const context = useContext(AuthContext);
-  const db: FirebaseFirestore = context.data;
+  const db: FirebaseFirestore = context.firestore;
   const [currentEvent, setCurrentEvent] = useState<EventInfo>();
   const [editable, setEditable] = useState<boolean>(false);
 

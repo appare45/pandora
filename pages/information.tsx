@@ -4,7 +4,7 @@ export default function Playground() {
   return (
     <>
       <User_layout>
-        <section className="prose prose-blue m-10 break-words">
+        <section className="prose prose-blue md:m-10 m-5 mx-7 break-words">
           <h2>利用規約</h2>
           <p>後で書く</p>
           <h2>プライバシーポリシー</h2>

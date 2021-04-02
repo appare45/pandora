@@ -29,19 +29,16 @@ export interface EventData {
 }
 
 export interface OrgData {
-  name: string;
-  user: firebase.firestore.CollectionReference<OrgUser>;
-  event: firebase.firestore.CollectionReference<OrgUser>;
-  domain: string;
+  name?: string;
+  user?: firebase.firestore.CollectionReference<OrgUser>;
+  event?: firebase.firestore.CollectionReference<OrgUser>;
+  domain?: string;
 }
 
 export const organizationDataConverter: firebase.firestore.FirestoreDataConverter<OrgData> = {
   toFirestore(organization: OrgData): firebase.firestore.DocumentData {
     return {
-      name: organization.name,
-      user: organization.user,
-      event: organization.event,
-      domain: organization.domain,
+      organization,
     };
   },
   fromFirestore(
@@ -61,7 +58,6 @@ export const organizationDataConverter: firebase.firestore.FirestoreDataConverte
 export const organizationUserDataConverter: firebase.firestore.FirestoreDataConverter<OrgUser> = {
   toFirestore(organizationUser: OrgUser): firebase.firestore.DocumentData {
     if (!!organizationUser) {
-      console.info(organizationUser);
       return {
         name: !organizationUser?.name ? organizationUser.name : '',
         joinedEvents: !organizationUser?.joinedEvents

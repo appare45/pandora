@@ -38,6 +38,18 @@ export async function setOrganization(
       console.error(error);
     });
 }
+
+export async function updateOrganization(id: string, data: OrgData) {
+  return orgRef
+    .withConverter(organizationDataConverter)
+    .doc(id)
+    .update(data)
+    .catch((errror) => {
+      console.warn(errror);
+      throw new Error(errror);
+    });
+}
+
 export async function searchOrganization(
   fieldPath: firebase.firestore.FieldPath | string,
   whereFilterOption: firebase.firestore.WhereFilterOp,

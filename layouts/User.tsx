@@ -113,7 +113,7 @@ export default function User_layout({ children }) {
                       </Link>
                     </h1>
                     <button
-                      className="w-11 h-11 m-1 p-1 sm:hidden"
+                      className="w-11 h-11 m-1 p-1 md:hidden"
                       onClick={() => setUserMenuStatus(!userMenuStatus)}
                     >
                       {userMenuStatus ? (

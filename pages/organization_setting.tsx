@@ -18,7 +18,7 @@ function Name_setting(): JSX.Element {
     [currentOrganization.currentOrganization?.name]
   );
   const [nameEdit, setNameEdit] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<Error>();
 
   function submitChange(e: FormEvent) {
     e.preventDefault();
@@ -29,7 +29,7 @@ function Name_setting(): JSX.Element {
         setError(null);
         setNameEdit(false);
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         setError(e);
       });
   }
@@ -44,13 +44,13 @@ function Name_setting(): JSX.Element {
           editable={nameEdit}
           edit={() => {
             setNameEdit(true);
-            setError('');
+            setError(null);
           }}
           // undefinedが渡されるのを防止
           value={organizationName || ''}
           onInput={(n: string) => {
             setOrganizationName(n);
-            setError('');
+            setError(null);
           }}
           label="組織名"
           max={20}
@@ -80,7 +80,7 @@ function Name_setting(): JSX.Element {
                     setOrganizationName(
                       currentOrganization.currentOrganization?.name || ''
                     );
-                    setError('');
+                    setError(null);
                   }}
                   color="gray"
                 >
@@ -92,7 +92,7 @@ function Name_setting(): JSX.Element {
         )}
       </form>
       {!!error && (
-        <WarningCard title="エラーが発生しました" description={error} />
+        <WarningCard title={error.name} description={error.message} />
       )}
     </div>
   );

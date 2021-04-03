@@ -15,5 +15,9 @@ export async function getUserInvites(userId: string): Promise<Invite[]> {
         data.push(_.data());
       });
       return data;
+    })
+    .catch((error) => {
+      console.warn(error);
+      throw new Error(error);
     });
 }

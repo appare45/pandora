@@ -5,32 +5,35 @@ export default function TextInput(props: {
   value: string;
   edit: Function;
   onInput: Function;
-  label: string;
+  label?: string;
   max?: number;
   min?: number;
 }) {
   const ref = useRef<HTMLInputElement>();
+  const id: string = `textInput-${Math.random().toString()}`;
   return (
     <div className="w-full">
-      <label htmlFor="eventTitle" className="text-xs text-gray-500">
-        {props.label}
-        {props.editable && (!!props?.max || !!props?.min) && (
-          <span
-            className={
-              (!!props?.max && ref.current.value.length > props?.max) ||
-              (!!props?.min && ref.current.value.length < props?.min)
-                ? 'text-red-400'
-                : undefined
-            }
-          >
-            （{ref.current.value.length}/{props?.max}）
-          </span>
-        )}
-      </label>
+      {!!props?.label && (
+        <label htmlFor={id} className="text-xs text-gray-500">
+          {props.label}
+          {props.editable && (!!props?.max || !!props?.min) && (
+            <span
+              className={
+                (!!props?.max && ref.current.value.length > props?.max) ||
+                (!!props?.min && ref.current.value.length < props?.min)
+                  ? 'text-red-400'
+                  : undefined
+              }
+            >
+              （{ref.current.value.length}/{props?.max}）
+            </span>
+          )}
+        </label>
+      )}
       <div className="relative">
         <input
           type="text"
-          id="eventTitle"
+          id={id}
           value={props.value}
           maxLength={props?.max}
           minLength={props?.min}

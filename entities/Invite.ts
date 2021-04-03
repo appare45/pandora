@@ -7,6 +7,7 @@ export interface Invite {
   readonly organizationId?: string;
   readonly endAt?: Date;
   readonly active?: boolean;
+  readonly count?: number;
 }
 
 export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> = {
@@ -28,6 +29,9 @@ export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> 
         typeof data?.organizationId === 'string'
           ? data.organizationId
           : undefined,
+      endAt: data?.endAt,
+      active: data?.active,
+      count: data?.count,
     };
   },
 };

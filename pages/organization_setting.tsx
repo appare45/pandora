@@ -1,4 +1,11 @@
-import { FormEvent, useContext, useEffect, useReducer, useState } from 'react';
+import {
+  FormEvent,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import ActionButton from '../components/ActionButton';
 import ActionCard from '../components/ActionCard';
 import WarningCard from '../components/WarningCard';
@@ -7,7 +14,7 @@ import { OrganizationContext } from '../contexts/Organization';
 import { Invite } from '../entities/Invite';
 import { role } from '../entities/Organization';
 import User_layout from '../layouts/User';
-import { getUserInvites } from '../repositories/Invite';
+import { createInvite, getUserInvites } from '../repositories/Invite';
 import { updateOrganization } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
 
@@ -95,17 +102,69 @@ function Name_setting(): JSX.Element {
           </>
         )}
       </form>
-      {!!error && (
-        <WarningCard title={error.name} description={error.message} />
-      )}
+      {!!error && <WarningCard error={error} />}
+    </div>
+  );
+}
+
+function CreatedInvite(props: { url: string }) {
+  const ref = useRef<HTMLInputElement>();
+  const [copied, setCopied] = useState<boolean>(false);
+  return (
+    <div className="flex">
+      <input
+        type="text"
+        value={props.url}
+        disabled
+        className="flex-1 bg-gray-50 p-1 font-mono"
+        ref={ref}
+      />
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(props.url);
+          setCopied(true);
+        }}
+        className="w-8 ml-1"
+      >
+        {copied ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="text-green-800"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="text-blue-600"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+        )}
+      </button>
     </div>
   );
 }
 
 function CreateInvite() {
   const { currentUser, currentUserData } = useContext(AuthContext);
-  const currentInvite: Invite = {
-    title: '',
+  const initInvite: Invite = {
     userId: currentUser?.uid,
     organizationId: currentUserData?.joinedOrgId,
     endAt: null,
@@ -113,66 +172,129 @@ function CreateInvite() {
     count: 0,
     role: 'host',
   };
+  const reducer = (
+    state: Invite,
+    action: {
+      type: 'setEndAt' | 'setRole' | 'setUserId' | 'setOrganizationId';
+      payload: role | Date | string;
+    }
+  ) => {
+    const _: Invite = state;
+    switch (action.type) {
+      case 'setEndAt': {
+        _.endAt = action.payload as Date;
+        return _;
+      }
+      case 'setRole': {
+        _.role = action.payload as role;
+        return _;
+      }
+      case 'setUserId': {
+        _.userId = action.payload as string;
+      }
+      case 'setOrganizationId': {
+        _.organizationId = action.payload as string;
+      }
+      default:
+        return _;
+    }
+  };
+
+  const [currentInvite, dispatch] = useReducer(reducer, initInvite);
   useEffect(() => {
     currentInvite.userId = currentUser?.uid;
+    dispatch({ type: 'setUserId', payload: currentUser?.uid });
     currentInvite.organizationId = currentUserData?.joinedOrgId;
+    dispatch({
+      type: 'setOrganizationId',
+      payload: currentUserData?.joinedOrgId,
+    });
   }, [currentUser?.uid, currentUserData?.joinedOrgId]);
-  function create(e) {
-    console.info(e);
-    console.info(currentInvite);
+  const [errorState, setErrorState] = useState<Error>();
+  function create(e: FormEvent) {
+    e.preventDefault();
+    if (!currentInvite.endAt) {
+      setErrorState({
+        name: '有効期限を指定してください',
+        message: '',
+      });
+    } else {
+      createInvite(currentInvite)
+        .then((e) => setInviteLink(`${window.location.host}/invite/${e.id}`))
+        .catch((e) => setErrorState(e));
+    }
   }
+
+  const [inviteLink, setInviteLink] = useState<string>();
   const today: Date = new Date();
   return (
     <div className="my-1">
       <ActionCard>
-        <form className="flex items-center justify-around w-full">
-          <div className="flex mb-1">
-            <div className="mx-1">
-              <label htmlFor="roleSetting">権限</label>
-              <select
-                name="role"
-                id="roleSetting"
-                required
-                onChange={(e) => (currentInvite.role = e.target.value as role)}
-              >
-                <option value="host" className="bg-yellow-100">
-                  管理者
-                </option>
-                <option value="teacher" className="bg-blue-100">
-                  教師
-                </option>
-                <option value="committer" className="bg-green-100">
-                  委員
-                </option>
-                <option value="member" className="bg-gray-100">
-                  生徒
-                </option>
-              </select>
+        {!inviteLink ? (
+          <form
+            className="flex items-center justify-around w-full"
+            onChange={() => setErrorState(null)}
+          >
+            <div className="flex mb-1">
+              <div className="mx-1">
+                <label htmlFor="roleSetting">権限</label>
+                <select
+                  name="role"
+                  id="roleSetting"
+                  required
+                  onChange={(e) =>
+                    dispatch({ type: 'setRole', payload: e.target.value })
+                  }
+                >
+                  <option value="host" className="bg-yellow-100">
+                    管理者
+                  </option>
+                  <option value="teacher" className="bg-blue-100">
+                    教師
+                  </option>
+                  <option value="committer" className="bg-green-100">
+                    委員
+                  </option>
+                  <option value="member" className="bg-gray-100">
+                    生徒
+                  </option>
+                </select>
+              </div>
+              <div className="mx-1">
+                <label htmlFor="limit">有効期限</label>
+                <input
+                  type="date"
+                  required
+                  min={`${today.getFullYear()}-${(
+                    '00' + (today.getMonth() + 1).toString()
+                  ).slice(-2)}-${('00' + today.getDate().toString()).slice(
+                    -2
+                  )}`}
+                  max={`${today.getFullYear() + 1}-${(
+                    '00' + (today.getMonth() + 1).toString()
+                  ).slice(-2)}-${('00' + today.getDate().toString()).slice(
+                    -2
+                  )}`}
+                  onChange={(e) => {
+                    currentInvite.endAt = e.target.valueAsDate;
+                    dispatch({
+                      type: 'setEndAt',
+                      payload: e.target.valueAsDate,
+                    });
+                  }}
+                />
+              </div>
             </div>
-            <div className="mx-1">
-              <label htmlFor="limit">有効期限</label>
-              <input
-                type="date"
-                required
-                min={`${today.getFullYear()}-${(
-                  '00' + (today.getMonth() + 1).toString()
-                ).slice(-2)}-${('00' + today.getDay().toString()).slice(-2)}`}
-                max={`${today.getFullYear() + 1}-${(
-                  '00' + (today.getMonth() + 1).toString()
-                ).slice(-2)}-${('00' + today.getDay().toString()).slice(-2)}`}
-                onChange={(e) => {
-                  currentInvite.endAt = e.target.valueAsDate;
-                  console.info(e.target.valueAsDate > new Date());
-                }}
-              />
+            <div>
+              <ActionButton enabled action={(e) => create(e)}>
+                作成
+              </ActionButton>
             </div>
-          </div>
-          <div>
-            <ActionButton enabled action={(e) => create(e)}>
-              作成
-            </ActionButton>
-          </div>
-        </form>
+          </form>
+        ) : (
+          <CreatedInvite url={inviteLink} />
+        )}
+        {!!errorState && <WarningCard error={errorState} />}
       </ActionCard>
     </div>
   );
@@ -185,7 +307,6 @@ function InviteLink() {
     if (!!userContext.currentUser?.uid) {
       getUserInvites(userContext.currentUser.uid).then((invite) => {
         setCurrentInvites(invite);
-        console.info(invite);
       });
     }
   }, [!userContext.currentUser?.uid]);
@@ -202,7 +323,7 @@ function InviteLink() {
       <div>
         <CreateInvite />
       </div>
-      {!!currentInvites && !!currentInvites?.length && (
+      {!!currentInvites?.length && (
         <table className="table-auto">
           <thead>
             <tr>名前</tr>
@@ -213,7 +334,7 @@ function InviteLink() {
           <tbody>
             {currentInvites.map((invite) => (
               <tr>
-                <td>{invite.title}</td>
+                <td>{invite?.created}</td>
               </tr>
             ))}
           </tbody>

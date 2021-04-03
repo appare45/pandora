@@ -1,8 +1,5 @@
 import 'react';
-export default function WarningCard(props: {
-  title: string;
-  description: string;
-}) {
+export default function WarningCard(props: { error: Error }) {
   return (
     <div className="bg-yellow-50 rounded-lg px-4 py-2 flex items-center mt-2 opacity-80 border border-yellow-400">
       <div className="flex-0 mr-2 md:mr-5 pt-0.5">
@@ -22,9 +19,9 @@ export default function WarningCard(props: {
         </svg>
       </div>
       <div className="flex-1">
-        <p className="opacity-70 text-sm md:leading-5">{props.title}</p>
+        <p className="opacity-70 text-sm md:leading-5">{props.error.name}</p>
         <p className="text-xs opacity-70 break-normal md:leading-4">
-          {props.description.toString()}
+          {props.error.message}
         </p>
       </div>
     </div>

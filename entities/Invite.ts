@@ -1,9 +1,7 @@
-import { Timestamp } from '@firebase/firestore-types';
 import firebase from 'firebase';
 import { role } from './Organization';
 export interface Invite {
-  title?: string;
-  created?: Timestamp;
+  created?: firebase.firestore.FieldValue;
   userId?: string;
   organizationId?: string;
   endAt?: Date;
@@ -24,7 +22,6 @@ export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> 
   ): Invite {
     const data = snapshot.data(options)!;
     return {
-      title: typeof data?.title === 'string' ? data.title : undefined,
       userId: typeof data?.userId === 'string' ? data.userId : undefined,
       created: data?.created,
       organizationId:

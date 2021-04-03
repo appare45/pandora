@@ -11,6 +11,7 @@ export async function getUserInvites(userId: string): Promise<Invite[]> {
     .get()
     .then((snapshot) => {
       const data: Invite[] = [];
+      console.info(snapshot.empty);
       snapshot.forEach((_) => {
         data.push(_.data());
       });
@@ -19,5 +20,24 @@ export async function getUserInvites(userId: string): Promise<Invite[]> {
     .catch((error) => {
       console.warn(error);
       throw new Error(error);
+    });
+}
+
+export async function createInvite(
+  invite: Invite
+): Promise<
+  firebase.firestore.DocumentReference<firebase.firestore.DocumentData>
+> {
+  return inviteRef
+    .withConverter(inviteConverter)
+    .add({
+      ...invite,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+    .then((_) => {
+      return _;
+    })
+    .catch((e) => {
+      throw new Error(e);
     });
 }

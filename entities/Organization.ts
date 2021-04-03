@@ -1,8 +1,10 @@
 import firebase from 'firebase';
+export type role = 'member' | 'host' | 'committee' | 'teacher';
+
 export interface OrgUser {
   name?: string;
   joinedEvents?: string[];
-  role?: 'member' | 'host' | 'committee' | 'teacher';
+  role?: role;
   lastLogin?: firebase.firestore.FieldValue;
 }
 
@@ -44,7 +46,7 @@ export const organizationDataConverter: firebase.firestore.FirestoreDataConverte
   fromFirestore(
     snapshot: firebase.firestore.QueryDocumentSnapshot,
     options?: firebase.firestore.SnapshotOptions
-  ): OrgData {
+  ): Readonly<OrgData> {
     const data = snapshot.data(options)!;
     return {
       name: data?.name,
@@ -70,7 +72,7 @@ export const organizationUserDataConverter: firebase.firestore.FirestoreDataConv
   fromFirestore(
     snapshot: firebase.firestore.QueryDocumentSnapshot,
     options?: firebase.firestore.SnapshotOptions
-  ): OrgUser {
+  ): Readonly<OrgUser> {
     const data = snapshot.data(options)!;
     return {
       name: data.name,

@@ -1,7 +1,7 @@
 import firebase from 'firebase';
 export interface UserData {
-  readonly lastLogin: firebase.firestore.FieldValue;
-  readonly joinedOrgId?: string;
+  lastLogin: firebase.firestore.FieldValue;
+  joinedOrgId?: string;
 }
 
 export const userDataConverter: firebase.firestore.FirestoreDataConverter<UserData> = {
@@ -14,7 +14,7 @@ export const userDataConverter: firebase.firestore.FirestoreDataConverter<UserDa
   fromFirestore(
     snapshot: firebase.firestore.QueryDocumentSnapshot,
     options?: firebase.firestore.SnapshotOptions
-  ): UserData {
+  ): Readonly<UserData> {
     const data = snapshot.data(options)!;
     return {
       lastLogin: data.lastLogin,

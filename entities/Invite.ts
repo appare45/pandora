@@ -1,13 +1,15 @@
 import { Timestamp } from '@firebase/firestore-types';
 import firebase from 'firebase';
+import { role } from './Organization';
 export interface Invite {
-  readonly title?: string;
-  readonly created?: Timestamp;
-  readonly userId?: string;
-  readonly organizationId?: string;
-  readonly endAt?: Date;
-  readonly active?: boolean;
-  readonly count?: number;
+  title?: string;
+  created?: Timestamp;
+  userId?: string;
+  organizationId?: string;
+  endAt?: Date;
+  active?: boolean;
+  count?: number;
+  role?: role;
 }
 
 export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> = {
@@ -32,6 +34,7 @@ export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> 
       endAt: data?.endAt,
       active: data?.active,
       count: data?.count,
+      role: data?.role,
     };
   },
 };

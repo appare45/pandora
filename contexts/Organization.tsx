@@ -3,7 +3,6 @@ import { OrgData, OrgUser } from '../entities/Organization';
 import {
   getOrganization,
   getOrganizationUser,
-  searchOrganization,
   setOrganizationUser,
 } from '../repositories/Organization';
 import { getUser } from '../repositories/User';

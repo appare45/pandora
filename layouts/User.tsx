@@ -46,46 +46,48 @@ function JoinOrganization() {
   );
 }
 
-function OrganizationUserLayout(props: {
-  userMenuStatus: boolean;
-  setUserMenuStatus: Function;
-  children: Object;
-}) {
-  const { currentUser } = useContext(AuthContext);
-  const { currentOrganization, curretnOrganizationUser } = useContext(
-    OrganizationContext
-  );
+const OrganizationUserLayout = React.memo(
+  (props: {
+    userMenuStatus: boolean;
+    setUserMenuStatus: Function;
+    children: Object;
+  }) => {
+    const { currentUser } = useContext(AuthContext);
+    const { currentOrganization, curretnOrganizationUser } = useContext(
+      OrganizationContext
+    );
 
-  return (
-    <>
-      <Modal
-        display={props.userMenuStatus}
-        onClose={() => props.setUserMenuStatus(false)}
-      >
-        <Sidebar
-          currentUser={currentUser}
-          currentOrg={currentOrganization}
-          currentOrgUser={curretnOrganizationUser}
-        />
-      </Modal>
+    return (
+      <>
+        <Modal
+          display={props.userMenuStatus}
+          onClose={() => props.setUserMenuStatus(false)}
+        >
+          <Sidebar
+            currentUser={currentUser}
+            currentOrg={currentOrganization}
+            currentOrgUser={curretnOrganizationUser}
+          />
+        </Modal>
 
-      <main className="grid grid-cols-1 md:grid-cols-5 h-screen relative">
-        <div className="hidden md:block justify-items-start col-start-1 relative bg-gray-50">
-          <div className="sticky top-0 h-screen">
-            <Sidebar
-              currentUser={currentUser}
-              currentOrg={currentOrganization}
-              currentOrgUser={curretnOrganizationUser}
-            />
+        <main className="grid grid-cols-1 md:grid-cols-5 h-screen relative">
+          <div className="hidden md:block justify-items-start col-start-1 relative bg-gray-50">
+            <div className="sticky top-0 h-screen">
+              <Sidebar
+                currentUser={currentUser}
+                currentOrg={currentOrganization}
+                currentOrgUser={curretnOrganizationUser}
+              />
+            </div>
           </div>
-        </div>
-        <div className="md:col-start-2 md:col-end-6 max-w-full">
-          {props.children}
-        </div>
-      </main>
-    </>
-  );
-}
+          <div className="md:col-start-2 md:col-end-6 max-w-full">
+            {props.children}
+          </div>
+        </main>
+      </>
+    );
+  }
+);
 
 export default function User_layout({ children }) {
   const { currentUser, currentUserData } = useContext(AuthContext);

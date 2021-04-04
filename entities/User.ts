@@ -1,15 +1,14 @@
 import firebase from 'firebase';
+import { Invite } from './Invite';
 export interface UserData {
   lastLogin: firebase.firestore.FieldValue;
   joinedOrgId?: string;
+  invite?: string[];
 }
 
 export const userDataConverter: firebase.firestore.FirestoreDataConverter<UserData> = {
   toFirestore(user: UserData): firebase.firestore.DocumentData {
-    if (!user?.joinedOrgId) {
-      return { lastLogin: user.lastLogin };
-    }
-    return { lastLogin: user.lastLogin, joinedOrgId: user?.joinedOrgId };
+    return user;
   },
   fromFirestore(
     snapshot: firebase.firestore.QueryDocumentSnapshot,
@@ -19,6 +18,7 @@ export const userDataConverter: firebase.firestore.FirestoreDataConverter<UserDa
     return {
       lastLogin: data.lastLogin,
       joinedOrgId: data?.joinedOrgId,
+      invite: data?.invite,
     };
   },
 };

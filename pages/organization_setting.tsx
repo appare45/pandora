@@ -14,7 +14,8 @@ import { OrganizationContext } from '../contexts/Organization';
 import { Invite } from '../entities/Invite';
 import { role } from '../entities/Organization';
 import User_layout from '../layouts/User';
-import { createInvite, getUserInvites } from '../repositories/Invite';
+import { createInvite } from '../repositories/Invite';
+import { createUserInvite, getUserInvites } from '../repositories/User';
 import { updateOrganization } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
 
@@ -124,7 +125,7 @@ function CreatedInvite(props: { url: string }) {
           navigator.clipboard.writeText(props.url);
           setCopied(true);
         }}
-        className="w-8 ml-1"
+        className="w-6 ml-1"
       >
         {copied ? (
           <svg
@@ -220,7 +221,10 @@ function CreateInvite() {
       });
     } else {
       createInvite(currentInvite)
-        .then((e) => setInviteLink(`${window.location.host}/invite/${e.id}`))
+        .then((e) => {
+          setInviteLink(`${window.location.host}/invite/${e.id}`),
+            createUserInvite([e], currentUser.uid);
+        })
         .catch((e) => setErrorState(e));
     }
   }
@@ -305,8 +309,8 @@ function InviteLink() {
   const userContext = useContext(AuthContext);
   useEffect(() => {
     if (!!userContext.currentUser?.uid) {
-      getUserInvites(userContext.currentUser.uid).then((invite) => {
-        setCurrentInvites(invite);
+      getUserInvites(userContext.currentUser.uid).then((invites) => {
+        setCurrentInvites(invites);
       });
     }
   }, [!userContext.currentUser?.uid]);

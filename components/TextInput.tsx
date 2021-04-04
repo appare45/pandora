@@ -3,7 +3,7 @@ import { useRef } from 'react';
 export default function TextInput(props: {
   editable: boolean;
   value: string;
-  edit: Function;
+  edit?: Function;
   onInput: Function;
   label?: string;
   max?: number;
@@ -37,7 +37,7 @@ export default function TextInput(props: {
           value={props.value}
           maxLength={props?.max}
           minLength={props?.min}
-          className="p-0.5 bg-transparent border-b-2 w-full"
+          className="p-0.5 bg-transparent border-b-2 w-full bg-white"
           disabled={!props.editable}
           ref={ref}
           onChange={() => {
@@ -50,7 +50,7 @@ export default function TextInput(props: {
             className="absolute right-0 bottom-0 w-7 h-7 p-1 text-gray-500"
             onClick={(e) => {
               e.preventDefault();
-              props.edit(ref);
+              props?.edit(ref);
               ref.current.focus();
             }}
             aria-label={`${props.label}を編集`}

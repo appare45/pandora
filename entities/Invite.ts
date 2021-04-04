@@ -1,7 +1,13 @@
-import firebase from 'firebase';
+import {
+  DocumentData,
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+  Timestamp,
+} from '@firebase/firestore-types';
 import { role } from './Organization';
 export interface Invite {
-  created?: firebase.firestore.FieldValue;
+  created?: Timestamp;
   userId?: string;
   organizationId?: string;
   endAt?: Date;
@@ -10,28 +16,29 @@ export interface Invite {
   role?: role;
 }
 
-export const inviteConverter: firebase.firestore.FirestoreDataConverter<Invite> = {
-  toFirestore(invite: Invite): firebase.firestore.DocumentData {
+export const inviteConverter: FirestoreDataConverter<Invite> = {
+  toFirestore(invite: Invite): DocumentData {
     return {
       invite,
     };
   },
   fromFirestore(
-    snapshot: firebase.firestore.QueryDocumentSnapshot,
-    options?: firebase.firestore.SnapshotOptions
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
   ): Invite {
     const data = snapshot.data(options)!;
     return {
-      userId: typeof data?.userId === 'string' ? data.userId : undefined,
-      created: data?.created,
+      userId:
+        typeof data?.invite?.userId === 'string' ? data.userId : undefined,
+      created: data?.invite?.created,
       organizationId:
-        typeof data?.organizationId === 'string'
-          ? data.organizationId
+        typeof data?.invite?.organizationId === 'string'
+          ? data?.invite.organizationId
           : undefined,
-      endAt: data?.endAt,
-      active: data?.active,
-      count: data?.count,
-      role: data?.role,
+      endAt: data?.invite?.endAt,
+      active: data?.invite?.active,
+      count: data?.invite?.count,
+      role: data?.invite?.role,
     };
   },
 };

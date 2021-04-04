@@ -51,16 +51,42 @@ export async function createUserInvite(
 }
 
 export async function getUserInvites(userId: string): Promise<Invite[]> {
-  const invites: Invite[] = [];
-  userRef
+  return userRef
     .doc(userId)
     .withConverter(userDataConverter)
-    .collection('invites')
     .get()
-    .then((userInvites) => {
-      userInvites.forEach((userInvite) => {
-        invites.push(userInvite.data());
-      });
+    .then(async (userInvites) => {
+      const getInvites = async (): Promise<Invite[]> => {
+        const invites: Invite[] = [];
+        if (!!userInvites.data().invite?.length) {
+          await Promise.all(
+            userInvites.data().invite.map(async (userInvite) => {
+              await userInvite
+                .get()
+                .then((data) => invites.push(data.data().invite));
+              console.info(invites);
+            })
+          );
+        }
+        return invites;
+      };
+      return await getInvites();
+    })
+    .catch((e) => {
+      console.warn(e);
+      throw new Error(e);
     });
-  return invites;
+}
+
+export async function userJoinOrganization(
+  organizationId: string,
+  userId: string
+) {
+  return userRef
+    .doc(userId)
+    .withConverter(userDataConverter)
+    .update({ joinedOrgId: organizationId })
+    .catch((e) => {
+      return e;
+    });
 }

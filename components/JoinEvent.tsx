@@ -103,8 +103,10 @@ export default function JoinEvent() {
           </div>
           {submitError.status && (
             <WarningCard
-              title={submitError.title}
-              description={submitError.description}
+              error={{
+                name: submitError.title,
+                message: submitError.description,
+              }}
             />
           )}
         </div>

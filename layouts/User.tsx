@@ -1,5 +1,5 @@
 import { AuthContext } from '../contexts/Auth';
-import React, { useContext, useRef, useState } from 'react';
+import React, { FormEvent, useContext, useRef, useState } from 'react';
 import LoginFront from '../components/login';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -11,38 +11,48 @@ import {
 } from '../contexts/Organization';
 import ActionCard from '../components/ActionCard';
 import ActionButton from '../components/ActionButton';
+import { JoinOrganizationFromInvitation } from '../repositories/Invite';
+import TextInput from '../components/TextInput';
+import { setOrganizationUser } from '../repositories/Organization';
 
 function JoinOrganization() {
-  const [enabled, setEnabled] = useState<boolean>(false);
-  let code: string;
-  function updateCode() {
-    code = input.current.value;
-    if (input.current.value.length > 0) {
-      setEnabled(true);
-    } else {
-      setEnabled(false);
-    }
-  }
-  const input = useRef<HTMLInputElement>();
+  const { currentUser } = useContext(AuthContext);
+  const [code, setCode] = useState<string>('');
+  const [error, setError] = useState<Error>();
   return (
-    <Modal display={true} blockClose>
-      <ActionCard>
-        <div>
-          <p className="text-lg font-medium">組織コードを入力</p>
-          <p className="text-sm">
-            事前に伝えられている組織コードを <br />
-            入力してください
-          </p>
-          <input
-            type="text"
-            className="my-2 w-full rounded p-1 font-mono"
-            ref={input}
-            onChange={() => updateCode()}
-          />
-          <ActionButton enabled={enabled}>参加</ActionButton>
-        </div>
-      </ActionCard>
-    </Modal>
+    <ActionCard>
+      <form>
+        <p className="text-lg font-medium">組織コードを入力</p>
+        <p className="text-sm">
+          事前に伝えられている組織コードを入力してください
+        </p>
+        <TextInput editable={true} onInput={setCode} value={code} />
+        <ActionButton
+          enabled={!!code?.length}
+          action={(e: FormEvent) => {
+            e.preventDefault();
+            JoinOrganizationFromInvitation(code, currentUser.uid)
+              .then((e) => {
+                setOrganizationUser(e.organizationId, currentUser.uid, {
+                  name: currentUser.displayName,
+                  role: e.role,
+                })
+                  .then(() => {
+                    setError(null);
+                  })
+                  .catch((e) => {
+                    console.warn(e);
+                    setError(e);
+                  });
+              })
+              .catch((e) => console.warn(e));
+          }}
+          type="submit"
+        >
+          参加
+        </ActionButton>
+      </form>
+    </ActionCard>
   );
 }
 
@@ -101,7 +111,9 @@ export default function User_layout({ children }) {
           {currentUserData !== undefined && (
             <>
               {!currentUserData?.joinedOrgId ? (
-                <JoinOrganization />
+                <Modal display={true} blockClose>
+                  <JoinOrganization />
+                </Modal>
               ) : (
                 <>
                   <Head>

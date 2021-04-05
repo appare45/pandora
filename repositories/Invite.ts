@@ -11,10 +11,7 @@ export async function createInvite(
 ): Promise<firebase.firestore.DocumentReference<Invite>> {
   return inviteRef
     .withConverter(inviteConverter)
-    .add({
-      ...invite,
-      created: firebase.firestore.Timestamp.now(),
-    })
+    .add({ ...invite, created: firebase.firestore.Timestamp.now() })
     .then((_) => {
       return _;
     })
@@ -32,25 +29,37 @@ export async function JoinOrganizationFromInvitation(
     .withConverter(inviteConverter)
     .doc(inviteId)
     .get()
-    .then((id) => {
+    .then(async (id) => {
       if (!id.data()) {
         throw { message: '見つかりませんでした' };
       } else {
-        return userJoinOrganization(id.data().organizationId, userId)
-          .then(() => {
-            return {
-              organizationId: id.data().organizationId,
-              role: id.data().role,
-            };
-          })
-          .catch((e) => {
-            return e;
-          });
+        try {
+          await userJoinOrganization(id.data().organizationId, userId);
+          return {
+            organizationId: id.data().organizationId,
+            role: id.data().role,
+          };
+        } catch (e) {
+          return e;
+        }
       }
     })
     .catch((e) => {
       return e;
     });
+}
+
+export async function setInivationsActivation(
+  invitationId: string,
+  isActive: boolean
+) {
+  try {
+    return inviteRef.withConverter(inviteConverter).doc(invitationId).update({
+      active: isActive,
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
 }
 
 export function getInviteLink(inviteId: string): string {

@@ -1,4 +1,4 @@
-import {
+import React, {
   FormEvent,
   useContext,
   useEffect,
@@ -14,7 +14,11 @@ import { OrganizationContext } from '../contexts/Organization';
 import { Invite, inviteConverter } from '../entities/Invite';
 import { role } from '../entities/Organization';
 import User_layout from '../layouts/User';
-import { createInvite, getInviteLink } from '../repositories/Invite';
+import {
+  createInvite,
+  getInviteLink,
+  setInivationsActivation,
+} from '../repositories/Invite';
 import { createUserInvite, getUserInvites } from '../repositories/User';
 import { updateOrganization } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
@@ -331,6 +335,7 @@ function InviteLink() {
       });
     }
   }, [!userContext.currentUser?.uid]);
+  const [createLinkState, setCreateLinkState] = useState<boolean>(false);
   return (
     <div className="my-5">
       <div className="flex">
@@ -338,13 +343,29 @@ function InviteLink() {
           招待リンク
         </h2>
         <div>
-          <ActionButton>作成</ActionButton>
+          {createLinkState ? (
+            <ActionButton
+              enabled
+              color="gray"
+              action={() => setCreateLinkState(false)}
+            >
+              キャンセル
+            </ActionButton>
+          ) : (
+            <ActionButton enabled action={() => setCreateLinkState(true)}>
+              作成
+            </ActionButton>
+          )}
         </div>
       </div>
-      <div className="my-2">
-        <CreateInvite />
-      </div>
-      {!!currentInvites?.length && (
+      {createLinkState && (
+        <div className="my-2">
+          <CreateInvite />
+        </div>
+      )}
+      {!currentInvites?.length ? (
+        <p className="text-center">作成されたリンクはありません</p>
+      ) : (
         <table className="table-auto w-full mt-4">
           <thead>
             <tr>
@@ -353,6 +374,7 @@ function InviteLink() {
               <th className="px-2">有効期限</th>
               <th className="px-2">利用回数</th>
               <th className="px-2">コピー</th>
+              <th className="px-2">有効/無効</th>
             </tr>
           </thead>
           <tbody>
@@ -369,61 +391,84 @@ function InviteLink() {
 function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
   const [inviteData, setInviteData] = useState<Invite>();
   useEffect(() => {
-    props.invite
-      .withConverter(inviteConverter)
-      .get()
-      .then((data) => {
-        setInviteData(data.data());
-      });
-  }, [props.invite]);
-  return (
-    <tr className="p-1 border-t-2 border-b-2">
-      {!!inviteData && (
-        <>
-          <td className="px-2">
-            {inviteData?.role == 'host'
-              ? '管理者'
-              : inviteData?.role == 'committee'
-              ? '委員'
-              : inviteData?.role == 'teacher'
-              ? '教師'
-              : '生徒'}
-          </td>
-          <td className="px-2">
-            {new Date(inviteData.created.toMillis()).toLocaleString()}
-          </td>
-          <td className="px-2">
-            {new Date(inviteData.endAt.toMillis()).toLocaleString()}
-          </td>
-          <td className="px-2">{inviteData?.count}</td>
-          <td className="flex p-1 justify-center">
-            <ActionButton
-              color="gray"
-              enabled
-              action={() =>
-                navigator.clipboard.writeText(getInviteLink(props.invite.id))
-              }
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="h-9 w-3"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </ActionButton>
-          </td>
-        </>
-      )}
-    </tr>
+    props.invite.withConverter(inviteConverter).onSnapshot((data) => {
+      setInviteData(data.data());
+    });
+  }, []);
+  const Memoizedlement = React.memo(
+    (props: { ivniteData: Invite; inviteId: string }) => {
+      return (
+        <tr className="p-1 border-t-2 border-b-2">
+          {!!props.ivniteData && (
+            <>
+              <td className="px-2">
+                {props.ivniteData?.role == 'host'
+                  ? '管理者'
+                  : props.ivniteData?.role == 'committee'
+                  ? '委員'
+                  : props.ivniteData?.role == 'teacher'
+                  ? '教師'
+                  : '生徒'}
+              </td>
+              <td className="px-2">
+                {new Date(props.ivniteData.created.toMillis()).toLocaleString()}
+              </td>
+              <td className="px-2">
+                {new Date(props.ivniteData.endAt.toMillis()).toLocaleString()}
+              </td>
+              <td className="px-2">{props.ivniteData?.count}</td>
+              <td className="flex p-1 justify-center">
+                <ActionButton
+                  color="gray"
+                  enabled
+                  action={() =>
+                    navigator.clipboard.writeText(getInviteLink(props.inviteId))
+                  }
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="h-9 w-3"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </ActionButton>
+              </td>
+              <td className="p-1 justify-center">
+                {props.ivniteData.active ? (
+                  <ActionButton
+                    enabled
+                    action={() =>
+                      setInivationsActivation(props.inviteId, false)
+                    }
+                    color="red"
+                  >
+                    無効化
+                  </ActionButton>
+                ) : (
+                  <ActionButton
+                    color="blue"
+                    enabled
+                    action={() => setInivationsActivation(props.inviteId, true)}
+                  >
+                    有効化
+                  </ActionButton>
+                )}
+              </td>
+            </>
+          )}
+        </tr>
+      );
+    }
   );
+  return <Memoizedlement ivniteData={inviteData} inviteId={props.invite.id} />;
 }
 
 export default function organization_setting() {

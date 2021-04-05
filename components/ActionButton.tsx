@@ -5,7 +5,6 @@ const Action_button = (props: {
   action?: Function;
   enabled?: boolean | 'loading';
   type?: 'submit' | 'reset' | 'button';
-
   color?: string;
 }) => {
   const color: string = !props?.color ? 'blue' : props.color;

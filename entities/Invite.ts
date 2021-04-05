@@ -20,9 +20,7 @@ export interface Invite {
 
 export const inviteConverter: FirestoreDataConverter<Invite> = {
   toFirestore(invite: Invite): DocumentData {
-    return {
-      invite,
-    };
+    return invite;
   },
   fromFirestore(
     snapshot: QueryDocumentSnapshot,
@@ -30,23 +28,22 @@ export const inviteConverter: FirestoreDataConverter<Invite> = {
   ): Invite {
     const data = snapshot.data(options)!;
     return {
-      userId:
-        typeof data?.invite?.userId === 'string' ? data.userId : undefined,
+      userId: typeof data?.userId === 'string' ? data.userId : undefined,
       created: new firebase.firestore.Timestamp(
-        data?.invite?.created.seconds,
-        data?.invite?.created.nanoseconds
+        data?.created.seconds,
+        data?.created.nanoseconds
       ),
       organizationId:
-        typeof data?.invite?.organizationId === 'string'
-          ? data?.invite.organizationId
+        typeof data?.organizationId === 'string'
+          ? data.organizationId
           : undefined,
       endAt: new firebase.firestore.Timestamp(
-        data?.invite?.endAt.seconds,
-        data?.invite?.endAt.nanoseconds
+        data?.endAt.seconds,
+        data?.endAt.nanoseconds
       ),
-      active: data?.invite?.active,
-      count: data?.invite?.count,
-      role: data?.invite?.role,
+      active: data?.active,
+      count: data?.count,
+      role: data?.role,
     };
   },
 };

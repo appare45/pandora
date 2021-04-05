@@ -14,6 +14,7 @@ import ActionButton from '../components/ActionButton';
 import { JoinOrganizationFromInvitation } from '../repositories/Invite';
 import TextInput from '../components/TextInput';
 import { setOrganizationUser } from '../repositories/Organization';
+import WarningCard from '../components/WarningCard';
 
 function JoinOrganization() {
   const { currentUser } = useContext(AuthContext);
@@ -51,6 +52,7 @@ function JoinOrganization() {
         >
           参加
         </ActionButton>
+        <WarningCard error={error} />
       </form>
     </ActionCard>
   );

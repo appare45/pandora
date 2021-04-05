@@ -11,18 +11,20 @@ import ActionCard from '../components/ActionCard';
 import WarningCard from '../components/WarningCard';
 import { AuthContext } from '../contexts/Auth';
 import { OrganizationContext } from '../contexts/Organization';
-import { Invite } from '../entities/Invite';
+import { Invite, inviteConverter } from '../entities/Invite';
 import { role } from '../entities/Organization';
 import User_layout from '../layouts/User';
-import { createInvite } from '../repositories/Invite';
+import { createInvite, getInviteLink } from '../repositories/Invite';
 import { createUserInvite, getUserInvites } from '../repositories/User';
 import { updateOrganization } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
+import { DocumentReference, Timestamp } from '@firebase/firestore-types';
+import firebase from '../utils/firebase';
 
 function Name_setting(): JSX.Element {
   const currentOrganization = useContext(OrganizationContext);
   const currentUserContext = useContext(AuthContext);
-  const [organizationName, setOrganizationName] = useState(
+  const [organizationName, setOrganizationName] = useState<string>(
     currentOrganization.currentOrganization?.name
   );
   useEffect(
@@ -177,13 +179,13 @@ function CreateInvite() {
     state: Invite,
     action: {
       type: 'setEndAt' | 'setRole' | 'setUserId' | 'setOrganizationId';
-      payload: role | Date | string;
+      payload: role | Timestamp | string;
     }
   ) => {
     const _: Invite = state;
     switch (action.type) {
       case 'setEndAt': {
-        _.endAt = action.payload as Date;
+        _.endAt = action.payload as Timestamp;
         return _;
       }
       case 'setRole': {
@@ -214,18 +216,29 @@ function CreateInvite() {
   const [errorState, setErrorState] = useState<Error>();
   function create(e: FormEvent) {
     e.preventDefault();
-    if (!currentInvite.endAt) {
+    if (
+      !currentInvite.endAt ||
+      currentInvite.endAt.seconds <= Date.now() / 1000 ||
+      currentInvite.endAt.seconds >= Date.now() + 3.154e7 / 1000
+    ) {
       setErrorState({
-        name: '有効期限を指定してください',
+        name: '有効期限を正しく指定してください',
         message: '',
       });
     } else {
       createInvite(currentInvite)
         .then((e) => {
-          setInviteLink(`${window.location.host}/invite/${e.id}`),
-            createUserInvite([e], currentUser.uid);
+          createUserInvite(e, currentUser.uid)
+            .then(() => {
+              setInviteLink(getInviteLink(e.id));
+            })
+            .catch((e) => {
+              setErrorState(e);
+            });
         })
-        .catch((e) => setErrorState(e));
+        .catch((e) => {
+          setErrorState(e);
+        });
     }
   }
 
@@ -271,19 +284,21 @@ function CreateInvite() {
                   required
                   min={`${today.getFullYear()}-${(
                     '00' + (today.getMonth() + 1).toString()
-                  ).slice(-2)}-${('00' + today.getDate().toString()).slice(
-                    -2
-                  )}`}
+                  ).slice(-2)}-${(
+                    '00' + (today.getDate() + 1).toString()
+                  ).slice(-2)}`}
                   max={`${today.getFullYear() + 1}-${(
                     '00' + (today.getMonth() + 1).toString()
                   ).slice(-2)}-${('00' + today.getDate().toString()).slice(
                     -2
                   )}`}
                   onChange={(e) => {
-                    currentInvite.endAt = e.target.valueAsDate;
                     dispatch({
                       type: 'setEndAt',
-                      payload: e.target.valueAsDate,
+                      payload: new firebase.firestore.Timestamp(
+                        e.target.valueAsNumber / 1000,
+                        0
+                      ),
                     });
                   }}
                 />
@@ -305,7 +320,9 @@ function CreateInvite() {
 }
 
 function InviteLink() {
-  const [currentInvites, setCurrentInvites] = useState<Invite[]>();
+  const [currentInvites, setCurrentInvites] = useState<
+    DocumentReference<Invite>[]
+  >();
   const userContext = useContext(AuthContext);
   useEffect(() => {
     if (!!userContext.currentUser?.uid) {
@@ -315,7 +332,7 @@ function InviteLink() {
     }
   }, [!userContext.currentUser?.uid]);
   return (
-    <div className="my-3">
+    <div className="my-5">
       <div className="flex">
         <h2 className="text-lg font-medium break-normal flex-1 w-full whitespace-nowrap">
           招待リンク
@@ -324,36 +341,97 @@ function InviteLink() {
           <ActionButton>作成</ActionButton>
         </div>
       </div>
-      <div>
+      <div className="my-2">
         <CreateInvite />
       </div>
       {!!currentInvites?.length && (
-        <table className="table-auto">
+        <table className="table-auto w-full mt-4">
           <thead>
-            <tr>名前</tr>
-            <tr>作成日時</tr>
-            <tr>有効期限</tr>
-            <tr>利用回数</tr>
+            <tr>
+              <th className="px-2">権限</th>
+              <th className="px-2">作成日時</th>
+              <th className="px-2">有効期限</th>
+              <th className="px-2">利用回数</th>
+              <th className="px-2">コピー</th>
+            </tr>
           </thead>
           <tbody>
             {currentInvites.map((invite) => (
-              <tr>
-                <td>{invite?.created}</td>
-              </tr>
+              <InviteDataTable invite={invite} key={invite.id} />
             ))}
           </tbody>
-          {/* {currentInvites && } */}
         </table>
       )}
     </div>
   );
 }
+
+function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
+  const [inviteData, setInviteData] = useState<Invite>();
+  useEffect(() => {
+    props.invite
+      .withConverter(inviteConverter)
+      .get()
+      .then((data) => {
+        setInviteData(data.data());
+      });
+  }, [props.invite]);
+  return (
+    <tr className="p-1 border-t-2 border-b-2">
+      {!!inviteData && (
+        <>
+          <td className="px-2">
+            {inviteData?.role == 'host'
+              ? '管理者'
+              : inviteData?.role == 'committee'
+              ? '委員'
+              : inviteData?.role == 'teacher'
+              ? '教師'
+              : '生徒'}
+          </td>
+          <td className="px-2">
+            {new Date(inviteData.created.toMillis()).toLocaleString()}
+          </td>
+          <td className="px-2">
+            {new Date(inviteData.endAt.toMillis()).toLocaleString()}
+          </td>
+          <td className="px-2">{inviteData?.count}</td>
+          <td className="flex p-1 justify-center">
+            <ActionButton
+              color="gray"
+              enabled
+              action={() =>
+                navigator.clipboard.writeText(getInviteLink(props.invite.id))
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="h-9 w-3"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+            </ActionButton>
+          </td>
+        </>
+      )}
+    </tr>
+  );
+}
+
 export default function organization_setting() {
   return (
     <User_layout>
       <section className="m-10">
         <h2 className="text-2xl font-medium">設定</h2>
-        <div className="md:px-3 px-0.5 py-2 max-w-xl">
+        <div className="md:px-3 px-0.5 py-2 max-w-3xl">
           <Name_setting />
           <InviteLink />
         </div>

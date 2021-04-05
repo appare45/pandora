@@ -1,3 +1,4 @@
+import { DocumentReference } from '@firebase/firestore-types';
 import { Invite } from '../entities/Invite';
 import { UserData, userDataConverter } from '../entities/User';
 import firebase, { app } from './../utils/firebase';
@@ -30,18 +31,18 @@ export async function setUser(
     .set(userData, options)
     .catch((error) => {
       console.error(error);
+      throw new Error(error);
     });
 }
 
 export async function createUserInvite(
-  invite: firebase.firestore.DocumentReference<Invite>[],
+  invite: firebase.firestore.DocumentReference<Invite>,
   userId: string
 ) {
-  console.info(invite);
   return userRef
     .doc(userId)
     .withConverter(userDataConverter)
-    .update({ invite: invite })
+    .update({ invite: firebase.firestore.FieldValue.arrayUnion(invite) })
     .then((_) => {
       return _;
     })
@@ -50,27 +51,15 @@ export async function createUserInvite(
     });
 }
 
-export async function getUserInvites(userId: string): Promise<Invite[]> {
+export async function getUserInvites(
+  userId: string
+): Promise<DocumentReference<Invite>[]> {
   return userRef
     .doc(userId)
     .withConverter(userDataConverter)
     .get()
-    .then(async (userInvites) => {
-      const getInvites = async (): Promise<Invite[]> => {
-        const invites: Invite[] = [];
-        if (!!userInvites.data().invite?.length) {
-          await Promise.all(
-            userInvites.data().invite.map(async (userInvite) => {
-              await userInvite
-                .get()
-                .then((data) => invites.push(data.data().invite));
-              console.info(invites);
-            })
-          );
-        }
-        return invites;
-      };
-      return await getInvites();
+    .then((userInvites) => {
+      return userInvites.data().invite;
     })
     .catch((e) => {
       console.warn(e);

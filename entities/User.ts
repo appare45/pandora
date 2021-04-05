@@ -3,7 +3,7 @@ import { Invite } from './Invite';
 export interface UserData {
   lastLogin: firebase.firestore.FieldValue;
   joinedOrgId?: string;
-  invite?: firebase.firestore.DocumentReference<{ invite: Invite }>[];
+  invite?: firebase.firestore.DocumentReference<Invite>[];
 }
 
 export const userDataConverter: firebase.firestore.FirestoreDataConverter<UserData> = {

@@ -31,29 +31,35 @@ const OrganizationProvider: FC = ({ children }) => {
       getUser(User.uid).then((user) => {
         if (!!user?.joinedOrgId) {
           // 組織のユーザーを設定
-          getOrganizationUser(user.joinedOrgId, User.uid).then((orgUser) => {
-            setCurrentOrganizationUser(orgUser);
-            if (!orgUser?.role) {
-              setOrganizationUser(
-                user.joinedOrgId,
-                User.uid,
-                {
-                  name: User.displayName,
-                  role: 'member',
-                },
-                { merge: true }
-              ).then(() => {
-                getOrganizationUser(user.joinedOrgId, User.uid).then(
-                  (orgUser) => {
-                    setCurrentOrganizationUser(orgUser);
+          if (!currentOrganizationUser) {
+            getOrganizationUser(user.joinedOrgId, User.uid).then((orgUser) => {
+              setCurrentOrganizationUser(orgUser);
+              if (!orgUser?.role) {
+                setOrganizationUser(
+                  user.joinedOrgId,
+                  User.uid,
+                  {
+                    name: User.displayName,
+                    role: 'member',
+                  },
+                  { merge: true }
+                ).then(() => {
+                  getOrganizationUser(user.joinedOrgId, User.uid).then(
+                    (orgUser) => {
+                      setCurrentOrganizationUser(orgUser);
+                    }
+                  );
+                });
+              }
+              if (!currentOrganization) {
+                getOrganization(user.joinedOrgId).then(
+                  (organization: OrgData) => {
+                    setCurrentOrganization(organization);
                   }
                 );
-              });
-            }
-            getOrganization(user.joinedOrgId).then((organization: OrgData) => {
-              setCurrentOrganization(organization);
+              }
             });
-          });
+          }
         }
       });
     }

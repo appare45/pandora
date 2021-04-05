@@ -19,6 +19,7 @@ export async function createInvite(
       return _;
     })
     .catch((e) => {
+      console.warn(e);
       throw new Error(e);
     });
 }
@@ -33,7 +34,7 @@ export async function JoinOrganizationFromInvitation(
     .get()
     .then((id) => {
       if (!id.data()) {
-        return { message: '見つからん' };
+        throw { message: '見つかりませんでした' };
       } else {
         return userJoinOrganization(id.data().organizationId, userId)
           .then(() => {
@@ -50,4 +51,8 @@ export async function JoinOrganizationFromInvitation(
     .catch((e) => {
       return e;
     });
+}
+
+export function getInviteLink(inviteId: string): string {
+  return `${window.location.host}/invite/${inviteId}`;
 }

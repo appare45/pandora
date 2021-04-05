@@ -13,8 +13,8 @@ export default function Playground() {
           <p>
             当ソフトウェアはMITライセンスのもとで提供されています。 <br />
             Copyright &copy; 2021 Appare45 <br />
-            <a href="https://github.com/appare45/pandora/blob/master/LICENSE">
-              https://github.com/appare45/pandora/blob/master/LICENSE
+            <a href="https://github.com/appare45/pandora/blob/main/LICENSE.md">
+              https://github.com/appare45/pandora/blob/main/LICENSE.md
             </a>
           </p>
           <h3>当ソフトフェアの使用しているパッケージ</h3>
@@ -23,7 +23,7 @@ export default function Playground() {
           </p>
           <p>
             ライセンスの全文は
-            <a href="https://github.com/appare45/pandora/blob/master/package-licenses.txt">
+            <a href="https://github.com/appare45/pandora/blob/main/package-licenses.txt">
               GitHub
             </a>
             から確認できます

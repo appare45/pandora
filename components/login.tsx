@@ -7,7 +7,6 @@ export default function LoginFront() {
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    currentUser !== null && router.push('/');
     setLoginStatus(currentUser);
   }, [currentUser]);
 

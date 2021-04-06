@@ -63,5 +63,5 @@ export async function setInivationsActivation(
 }
 
 export function getInviteLink(inviteId: string): string {
-  return `${window.location.host}/invite/${inviteId}`;
+  return `${window.location.host}/invite/?${inviteId}`;
 }

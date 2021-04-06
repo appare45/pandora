@@ -176,7 +176,6 @@ function CreateInvite() {
     organizationId: currentUserData?.joinedOrgId,
     endAt: null,
     active: true,
-    count: 0,
     role: 'host',
   };
   const reducer = (
@@ -267,18 +266,10 @@ function CreateInvite() {
                     dispatch({ type: 'setRole', payload: e.target.value })
                   }
                 >
-                  <option value="host" className="bg-yellow-100">
-                    管理者
-                  </option>
-                  <option value="teacher" className="bg-blue-100">
-                    教師
-                  </option>
-                  <option value="committer" className="bg-green-100">
-                    委員
-                  </option>
-                  <option value="member" className="bg-gray-100">
-                    生徒
-                  </option>
+                  <option value="member">生徒</option>
+                  <option value="teacher">教師</option>
+                  <option value="committer">委員</option>
+                  <option value="host">管理者</option>
                 </select>
               </div>
               <div className="mx-1">
@@ -372,7 +363,6 @@ function InviteLink() {
               <th className="px-2">権限</th>
               <th className="px-2">作成日時</th>
               <th className="px-2">有効期限</th>
-              <th className="px-2">利用回数</th>
               <th className="px-2">コピー</th>
               <th className="px-2">有効/無効</th>
             </tr>
@@ -416,7 +406,6 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
               <td className="px-2">
                 {new Date(props.ivniteData.endAt.toMillis()).toLocaleString()}
               </td>
-              <td className="px-2">{props.ivniteData?.count}</td>
               <td className="flex p-1 justify-center">
                 <ActionButton
                   color="gray"

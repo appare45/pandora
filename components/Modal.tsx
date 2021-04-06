@@ -29,7 +29,9 @@ export default function Modal(props: {
           <div
             className={`w-full h-full ${
               !props?.blockClose ? 'cursor-pointer' : undefined
-            } absolute top-0 left-0 bg-gray-50 opacity-90`}
+            } absolute top-0 left-0 bg-gray-50 ${
+              !props?.blockClose ? 'opacity-90' : ''
+            }`}
             onClick={() => {
               if (!props?.blockClose) {
                 props.onClose();

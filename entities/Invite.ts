@@ -6,7 +6,7 @@ import {
   Timestamp,
 } from '@firebase/firestore-types';
 import { role } from './Organization';
-import firebase, { app } from '../utils/firebase';
+import firebase from '../utils/firebase';
 
 export interface Invite {
   created?: Timestamp;
@@ -14,7 +14,6 @@ export interface Invite {
   organizationId?: string;
   endAt?: Timestamp;
   active?: boolean;
-  count?: number;
   role?: role;
 }
 
@@ -42,7 +41,6 @@ export const inviteConverter: FirestoreDataConverter<Invite> = {
         data?.endAt.nanoseconds
       ),
       active: data?.active,
-      count: data?.count,
       role: data?.role,
     };
   },

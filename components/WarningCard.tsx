@@ -19,9 +19,9 @@ export default function WarningCard(props: { error: Error }) {
         </svg>
       </div>
       <div className="flex-1">
-        <p className="opacity-70 text-sm md:leading-5">{props.error.name}</p>
+        <p className="opacity-70 text-sm md:leading-5">{props.error?.name}</p>
         <p className="text-xs opacity-70 break-normal md:leading-4">
-          {props.error.message}
+          {props.error?.message}
         </p>
       </div>
     </div>

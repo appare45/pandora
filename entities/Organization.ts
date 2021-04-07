@@ -81,3 +81,18 @@ export const organizationUserDataConverter: firebase.firestore.FirestoreDataConv
     };
   },
 };
+
+export const roleTextConverter = (role: role): string => {
+  switch (role) {
+    case 'host':
+      return '管理者';
+
+    case 'teacher':
+      return '教員';
+
+    case 'committee':
+      return '委員';
+    default:
+      return '生徒';
+  }
+};

@@ -1,3 +1,4 @@
+import { DocumentData, QueryDocumentSnapshot } from '@firebase/firestore-types';
 import {
   organizationDataConverter,
   organizationUserDataConverter,
@@ -85,6 +86,21 @@ export async function getOrganizationUser(
     .catch((error) => {
       console.warn(error);
       return error;
+    });
+}
+
+export async function getOrganizationusersList(
+  organizationId: string
+): Promise<QueryDocumentSnapshot<DocumentData>[]> {
+  return orgRef
+    .withConverter(organizationDataConverter)
+    .doc(organizationId)
+    .collection('user')
+    .get()
+    .then((data) => {
+      const users: QueryDocumentSnapshot<DocumentData>[] = [];
+      data.forEach((user) => users.push(user));
+      return users;
     });
 }
 

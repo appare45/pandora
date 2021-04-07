@@ -12,7 +12,7 @@ import WarningCard from '../components/WarningCard';
 import { AuthContext } from '../contexts/Auth';
 import { OrganizationContext } from '../contexts/Organization';
 import { Invite, inviteConverter } from '../entities/Invite';
-import { role } from '../entities/Organization';
+import { role, roleTextConverter } from '../entities/Organization';
 import User_layout from '../layouts/User';
 import {
   createInvite,
@@ -20,10 +20,19 @@ import {
   setInivationsActivation,
 } from '../repositories/Invite';
 import { createUserInvite, getUserInvites } from '../repositories/User';
-import { updateOrganization } from '../repositories/Organization';
+import {
+  getOrganizationusersList,
+  updateOrganization,
+} from '../repositories/Organization';
 import TextInput from './../components/TextInput';
-import { DocumentReference, Timestamp } from '@firebase/firestore-types';
+import {
+  DocumentData,
+  DocumentReference,
+  QueryDocumentSnapshot,
+  Timestamp,
+} from '@firebase/firestore-types';
 import firebase from '../utils/firebase';
+import Heading from '../components/Heading';
 
 function Name_setting(): JSX.Element {
   const currentOrganization = useContext(OrganizationContext);
@@ -319,6 +328,7 @@ function InviteLink() {
     DocumentReference<Invite>[]
   >();
   const userContext = useContext(AuthContext);
+  const { curretnOrganizationUser } = useContext(OrganizationContext);
   useEffect(() => {
     if (!!userContext.currentUser?.uid) {
       getUserInvites(userContext.currentUser.uid).then((invites) => {
@@ -328,53 +338,57 @@ function InviteLink() {
   }, [!userContext.currentUser?.uid]);
   const [createLinkState, setCreateLinkState] = useState<boolean>(false);
   return (
-    <div className="my-5">
-      <div className="flex">
-        <h2 className="text-lg font-medium break-normal flex-1 w-full whitespace-nowrap">
-          招待リンク
-        </h2>
-        <div>
-          {createLinkState ? (
-            <ActionButton
-              enabled
-              color="gray"
-              action={() => setCreateLinkState(false)}
-            >
-              キャンセル
-            </ActionButton>
+    <>
+      {curretnOrganizationUser?.role === 'host' && (
+        <div className="my-5">
+          <div className="flex">
+            <h2 className="text-lg font-medium break-normal flex-1 w-full whitespace-nowrap">
+              招待リンク
+            </h2>
+            <div>
+              {createLinkState ? (
+                <ActionButton
+                  enabled
+                  color="gray"
+                  action={() => setCreateLinkState(false)}
+                >
+                  キャンセル
+                </ActionButton>
+              ) : (
+                <ActionButton enabled action={() => setCreateLinkState(true)}>
+                  作成
+                </ActionButton>
+              )}
+            </div>
+          </div>
+          {createLinkState && (
+            <div className="my-2">
+              <CreateInvite />
+            </div>
+          )}
+          {!currentInvites?.length ? (
+            <p className="text-center">作成されたリンクはありません</p>
           ) : (
-            <ActionButton enabled action={() => setCreateLinkState(true)}>
-              作成
-            </ActionButton>
+            <table className="table-auto w-full mt-4">
+              <thead>
+                <tr>
+                  <th className="px-2">権限</th>
+                  <th className="px-2">作成日時</th>
+                  <th className="px-2">有効期限</th>
+                  <th className="px-2">コピー</th>
+                  <th className="px-2">有効/無効</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentInvites.map((invite) => (
+                  <InviteDataTable invite={invite} key={invite.id} />
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
-      </div>
-      {createLinkState && (
-        <div className="my-2">
-          <CreateInvite />
-        </div>
       )}
-      {!currentInvites?.length ? (
-        <p className="text-center">作成されたリンクはありません</p>
-      ) : (
-        <table className="table-auto w-full mt-4">
-          <thead>
-            <tr>
-              <th className="px-2">権限</th>
-              <th className="px-2">作成日時</th>
-              <th className="px-2">有効期限</th>
-              <th className="px-2">コピー</th>
-              <th className="px-2">有効/無効</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentInvites.map((invite) => (
-              <InviteDataTable invite={invite} key={invite.id} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+    </>
   );
 }
 
@@ -386,25 +400,19 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
     });
   }, []);
   const Memoizedlement = React.memo(
-    (props: { ivniteData: Invite; inviteId: string }) => {
+    (props: { inviteData: Invite; inviteId: string }) => {
       return (
         <tr className="p-1 border-t-2 border-b-2">
-          {!!props.ivniteData && (
+          {!!props.inviteData && (
             <>
               <td className="px-2">
-                {props.ivniteData?.role == 'host'
-                  ? '管理者'
-                  : props.ivniteData?.role == 'committee'
-                  ? '委員'
-                  : props.ivniteData?.role == 'teacher'
-                  ? '教師'
-                  : '生徒'}
+                {roleTextConverter(props.inviteData.role)}
               </td>
               <td className="px-2">
-                {new Date(props.ivniteData.created.toMillis()).toLocaleString()}
+                {new Date(props.inviteData.created.toMillis()).toLocaleString()}
               </td>
               <td className="px-2">
-                {new Date(props.ivniteData.endAt.toMillis()).toLocaleString()}
+                {new Date(props.inviteData.endAt.toMillis()).toLocaleString()}
               </td>
               <td className="flex p-1 justify-center">
                 <ActionButton
@@ -431,7 +439,7 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
                 </ActionButton>
               </td>
               <td className="p-1 justify-center">
-                {props.ivniteData.active ? (
+                {props.inviteData.active ? (
                   <ActionButton
                     enabled
                     action={() =>
@@ -457,17 +465,63 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
       );
     }
   );
-  return <Memoizedlement ivniteData={inviteData} inviteId={props.invite.id} />;
+  return <Memoizedlement inviteData={inviteData} inviteId={props.invite.id} />;
+}
+
+function UsersList() {
+  const [currentUsers, setCurrentUsers] = useState<
+    QueryDocumentSnapshot<DocumentData>[]
+  >();
+  const { currentUserData } = useContext(AuthContext);
+  useEffect(() => {
+    if (!!currentUserData?.joinedOrgId) {
+      getOrganizationusersList(currentUserData?.joinedOrgId).then((data) => {
+        setCurrentUsers(data);
+      });
+    }
+  }, [!currentUserData]);
+  return (
+    <>
+      <Heading level={2}>ユーザー</Heading>
+      {!currentUsers?.length ? (
+        <p>ユーザーが見つかりませんでした</p>
+      ) : (
+        <table className="table-auto w-full">
+          <thead>
+            <tr>
+              <th>氏名</th>
+              <th>権限</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentUsers.map((data) => (
+              <UserDataRow userData={data} key={data.id} />
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  );
+}
+
+function UserDataRow(props: { userData: QueryDocumentSnapshot<DocumentData> }) {
+  return (
+    <tr className="p-1 border-t-2 border-b-2 leading-7">
+      <td>{props.userData.data().name}</td>
+      <td>{roleTextConverter(props.userData.data().role)}</td>
+    </tr>
+  );
 }
 
 export default function organization_setting() {
   return (
     <User_layout>
       <section className="m-10">
-        <h2 className="text-2xl font-medium">設定</h2>
+        <Heading level={1}>設定</Heading>
         <div className="md:px-3 px-0.5 py-2 max-w-3xl">
           <Name_setting />
           <InviteLink />
+          <UsersList />
         </div>
       </section>
     </User_layout>

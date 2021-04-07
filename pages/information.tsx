@@ -23,7 +23,7 @@ export default function Playground() {
           </p>
           <p>
             ライセンスの全文は
-            <a href="https://github.com/appare45/pandora/blob/main/package-licenses.txt">
+            <a href="https://github.com/appare45/pandora/blob/main/package.txt">
               GitHub
             </a>
             から確認できます

@@ -35,6 +35,7 @@ export interface OrgData {
   user?: firebase.firestore.CollectionReference<OrgUser>;
   event?: firebase.firestore.CollectionReference<OrgUser>;
   domain?: string;
+  disabledUsersIds?: string[];
 }
 
 export const organizationDataConverter: firebase.firestore.FirestoreDataConverter<OrgData> = {
@@ -53,6 +54,7 @@ export const organizationDataConverter: firebase.firestore.FirestoreDataConverte
       user: data?.user,
       event: data?.event,
       domain: data?.domain,
+      disabledUsersIds: data?.disabledUsersIds,
     };
   },
 };
@@ -86,10 +88,8 @@ export const roleTextConverter = (role: role): string => {
   switch (role) {
     case 'host':
       return '管理者';
-
     case 'teacher':
       return '教員';
-
     case 'committee':
       return '委員';
     default:

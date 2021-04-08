@@ -30,7 +30,7 @@ const OrganizationUserLayout = React.memo(
         >
           <Sidebar
             currentUser={currentUser}
-            currentOrg={currentOrganization}
+            currentOrg={currentOrganization?.data()}
             currentOrgUser={curretnOrganizationUser}
           />
         </Modal>
@@ -40,7 +40,7 @@ const OrganizationUserLayout = React.memo(
             <div className="sticky top-0 h-screen">
               <Sidebar
                 currentUser={currentUser}
-                currentOrg={currentOrganization}
+                currentOrg={currentOrganization?.data()}
                 currentOrgUser={curretnOrganizationUser}
               />
             </div>

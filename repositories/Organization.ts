@@ -1,4 +1,8 @@
-import { DocumentData, QueryDocumentSnapshot } from '@firebase/firestore-types';
+import {
+  DocumentData,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+} from '@firebase/firestore-types';
 import {
   organizationDataConverter,
   organizationUserDataConverter,
@@ -12,13 +16,13 @@ const orgRef = firestore.collection('organization');
 
 export async function getOrganization(
   organizationId: string
-): Promise<OrgData> {
+): Promise<DocumentSnapshot<OrgData>> {
   return orgRef
     .withConverter(organizationDataConverter)
     .doc(organizationId)
     .get()
     .then((org: firebase.firestore.DocumentSnapshot<OrgData>) => {
-      return org.data();
+      return org;
     })
     .catch((error) => {
       console.warn(error);
@@ -89,7 +93,7 @@ export async function getOrganizationUser(
     });
 }
 
-export async function getOrganizationusersList(
+export async function getOrganizationUersList(
   organizationId: string
 ): Promise<QueryDocumentSnapshot<DocumentData>[]> {
   return orgRef
@@ -122,5 +126,35 @@ export async function setOrganizationUser(
     .catch((error) => {
       console.error(error);
       throw new Error(error);
+    });
+}
+
+export async function DisableOrganizationUser(
+  organizationId: string,
+  userId: string
+) {
+  orgRef
+    .withConverter(organizationDataConverter)
+    .doc(organizationId)
+    .update({
+      disabledUsersIds: firebase.firestore.FieldValue.arrayUnion(userId),
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
+}
+
+export async function EnableOrganizationUser(
+  organizationId: string,
+  userId: string
+) {
+  orgRef
+    .withConverter(organizationDataConverter)
+    .doc(organizationId)
+    .update({
+      disabledUsersIds: firebase.firestore.FieldValue.arrayRemove(userId),
+    })
+    .catch((e) => {
+      throw new Error(e);
     });
 }

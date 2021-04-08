@@ -21,7 +21,9 @@ import {
 } from '../repositories/Invite';
 import { createUserInvite, getUserInvites } from '../repositories/User';
 import {
-  getOrganizationusersList,
+  DisableOrganizationUser,
+  EnableOrganizationUser,
+  getOrganizationUersList,
   updateOrganization,
 } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
@@ -35,15 +37,14 @@ import firebase from '../utils/firebase';
 import Heading from '../components/Heading';
 
 function Name_setting(): JSX.Element {
-  const currentOrganization = useContext(OrganizationContext);
+  const { currentOrganization } = useContext(OrganizationContext);
   const currentUserContext = useContext(AuthContext);
   const [organizationName, setOrganizationName] = useState<string>(
-    currentOrganization.currentOrganization?.name
+    currentOrganization?.data()?.name
   );
-  useEffect(
-    () => setOrganizationName(currentOrganization.currentOrganization?.name),
-    [currentOrganization.currentOrganization?.name]
-  );
+  useEffect(() => setOrganizationName(currentOrganization?.data()?.name), [
+    currentOrganization?.data()?.name,
+  ]);
   const [nameEdit, setNameEdit] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
 
@@ -104,9 +105,7 @@ function Name_setting(): JSX.Element {
                   enabled={true}
                   action={() => {
                     setNameEdit(false);
-                    setOrganizationName(
-                      currentOrganization.currentOrganization?.name || ''
-                    );
+                    setOrganizationName(currentOrganization.data()?.name || '');
                     setError(null);
                   }}
                   color="gray"
@@ -472,14 +471,21 @@ function UsersList() {
   const [currentUsers, setCurrentUsers] = useState<
     QueryDocumentSnapshot<DocumentData>[]
   >();
+  const [disabledUsersIds, setDisabledUsersIds] = useState<string[]>();
   const { currentUserData } = useContext(AuthContext);
+  const { currentOrganization } = useContext(OrganizationContext);
   useEffect(() => {
     if (!!currentUserData?.joinedOrgId) {
-      getOrganizationusersList(currentUserData?.joinedOrgId).then((data) => {
+      getOrganizationUersList(currentUserData?.joinedOrgId).then((data) => {
         setCurrentUsers(data);
       });
     }
   }, [!currentUserData]);
+  useEffect(() => {
+    if (!!currentOrganization?.data().disabledUsersIds) {
+      setDisabledUsersIds(currentOrganization?.data().disabledUsersIds);
+    }
+  }, [!currentOrganization?.data().disabledUsersIds]);
   return (
     <>
       <Heading level={2}>ユーザー</Heading>
@@ -491,11 +497,16 @@ function UsersList() {
             <tr>
               <th>氏名</th>
               <th>権限</th>
+              <th>有効/無効</th>
             </tr>
           </thead>
           <tbody>
             {currentUsers.map((data) => (
-              <UserDataRow userData={data} key={data.id} />
+              <UserDataRow
+                userData={data}
+                key={data.id}
+                isEnabled={!(disabledUsersIds?.indexOf(data.id) >= 0)}
+              />
             ))}
           </tbody>
         </table>
@@ -504,11 +515,41 @@ function UsersList() {
   );
 }
 
-function UserDataRow(props: { userData: QueryDocumentSnapshot<DocumentData> }) {
+function UserDataRow(props: {
+  userData: QueryDocumentSnapshot<DocumentData>;
+  isEnabled: boolean;
+}) {
+  const { currentUserData } = useContext(AuthContext);
+  const [isEnabledLocal, setIsEnabledLocal] = useState<boolean>();
+  useEffect(() => {
+    setIsEnabledLocal(props.isEnabled);
+  }, [props.isEnabled]);
+  function disableUser(userId: string) {
+    if (isEnabledLocal) {
+      DisableOrganizationUser(currentUserData.joinedOrgId, userId).then(() => {
+        setIsEnabledLocal(false);
+      });
+    } else {
+      EnableOrganizationUser(currentUserData.joinedOrgId, userId).then(() => {
+        setIsEnabledLocal(true);
+      });
+    }
+  }
   return (
     <tr className="p-1 border-t-2 border-b-2 leading-7">
       <td>{props.userData.data().name}</td>
       <td>{roleTextConverter(props.userData.data().role)}</td>
+      <td className="flex justify-center">
+        <ActionButton
+          enabled
+          color={isEnabledLocal && 'red'}
+          action={() => {
+            disableUser(props.userData.id);
+          }}
+        >
+          {isEnabledLocal ? '無効化' : '有効化'}
+        </ActionButton>
+      </td>
     </tr>
   );
 }

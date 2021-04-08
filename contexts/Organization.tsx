@@ -1,3 +1,4 @@
+import { DocumentSnapshot } from '@firebase/firestore-types';
 import { FC, createContext, useEffect, useState, useContext } from 'react';
 import { OrgData, OrgUser } from '../entities/Organization';
 import {
@@ -9,7 +10,7 @@ import { getUser } from '../repositories/User';
 import { AuthContext } from './Auth';
 
 export type OrganizationContextProps = {
-  currentOrganization: OrgData;
+  currentOrganization: DocumentSnapshot<OrgData>;
   curretnOrganizationUser: OrgUser;
 };
 
@@ -19,7 +20,9 @@ const OrganizationContext = createContext<OrganizationContextProps>({
 });
 
 const OrganizationProvider: FC = ({ children }) => {
-  const [currentOrganization, setCurrentOrganization] = useState<OrgData>();
+  const [currentOrganization, setCurrentOrganization] = useState<
+    DocumentSnapshot<OrgData>
+  >();
   const [
     currentOrganizationUser,
     setCurrentOrganizationUser,
@@ -52,11 +55,9 @@ const OrganizationProvider: FC = ({ children }) => {
                 });
               }
               if (!currentOrganization) {
-                getOrganization(user.joinedOrgId).then(
-                  (organization: OrgData) => {
-                    setCurrentOrganization(organization);
-                  }
-                );
+                getOrganization(user.joinedOrgId).then((organization) => {
+                  setCurrentOrganization(organization);
+                });
               }
             });
           }

@@ -519,7 +519,7 @@ function UserDataRow(props: {
   userData: QueryDocumentSnapshot<DocumentData>;
   isEnabled: boolean;
 }) {
-  const { currentUserData } = useContext(AuthContext);
+  const { currentUser, currentUserData } = useContext(AuthContext);
   const [isEnabledLocal, setIsEnabledLocal] = useState<boolean>();
   useEffect(() => {
     setIsEnabledLocal(props.isEnabled);
@@ -540,15 +540,19 @@ function UserDataRow(props: {
       <td>{props.userData.data().name}</td>
       <td>{roleTextConverter(props.userData.data().role)}</td>
       <td className="flex justify-center">
-        <ActionButton
-          enabled
-          color={isEnabledLocal && 'red'}
-          action={() => {
-            disableUser(props.userData.id);
-          }}
-        >
-          {isEnabledLocal ? '無効化' : '有効化'}
-        </ActionButton>
+        {currentUser.uid == props.userData.id ? (
+          <p>あなた</p>
+        ) : (
+          <ActionButton
+            enabled
+            color={isEnabledLocal && 'red'}
+            action={() => {
+              disableUser(props.userData.id);
+            }}
+          >
+            {isEnabledLocal ? '無効化' : '有効化'}
+          </ActionButton>
+        )}
       </td>
     </tr>
   );

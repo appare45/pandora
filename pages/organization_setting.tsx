@@ -395,6 +395,7 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
   const [inviteData, setInviteData] = useState<Invite>();
   useEffect(() => {
     props.invite.withConverter(inviteConverter).onSnapshot((data) => {
+      console.info(data.data().endAt.toMillis() > Date.now());
       setInviteData(data.data());
     });
   }, []);
@@ -438,24 +439,32 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
                 </ActionButton>
               </td>
               <td className="p-1 justify-center">
-                {props.inviteData.active ? (
-                  <ActionButton
-                    enabled
-                    action={() =>
-                      setInivationsActivation(props.inviteId, false)
-                    }
-                    color="red"
-                  >
-                    無効化
-                  </ActionButton>
+                {props.inviteData.endAt.toMillis() < Date.now() ? (
+                  <>期限切れ</>
                 ) : (
-                  <ActionButton
-                    color="blue"
-                    enabled
-                    action={() => setInivationsActivation(props.inviteId, true)}
-                  >
-                    有効化
-                  </ActionButton>
+                  <>
+                    {props.inviteData.active ? (
+                      <ActionButton
+                        enabled
+                        action={() =>
+                          setInivationsActivation(props.inviteId, false)
+                        }
+                        color="red"
+                      >
+                        無効化
+                      </ActionButton>
+                    ) : (
+                      <ActionButton
+                        color="blue"
+                        enabled
+                        action={() =>
+                          setInivationsActivation(props.inviteId, true)
+                        }
+                      >
+                        有効化
+                      </ActionButton>
+                    )}
+                  </>
                 )}
               </td>
             </>

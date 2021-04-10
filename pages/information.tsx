@@ -30,6 +30,17 @@ export default function Playground() {
           </p>
           <ul>
             <li>
+              <p>Heroicons</p>
+              <p>
+                Copyright (c) 2020 Refactoring UI Inc.
+                <br />
+                Released under the MIT license <br />
+                <a href="https://github.com/tailwindlabs/heroicons/blob/master/LICENSE">
+                  https://github.com/tailwindlabs/heroicons/blob/master/LICENSE
+                </a>
+              </p>
+            </li>
+            <li>
               <p>tailwindcss-typography</p>
               <p>
                 Copyright (c) 2021 Tailwind Labs <br />

@@ -158,3 +158,18 @@ export async function EnableOrganizationUser(
       throw new Error(e);
     });
 }
+
+export async function SetDomainVerification(
+  domain: string,
+  organizationId: string
+) {
+  orgRef
+    .withConverter(organizationDataConverter)
+    .doc(organizationId)
+    .update({
+      domain: domain,
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
+}

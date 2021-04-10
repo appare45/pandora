@@ -24,6 +24,7 @@ import {
   DisableOrganizationUser,
   EnableOrganizationUser,
   getOrganizationUersList,
+  SetDomainVerification,
   updateOrganization,
 } from '../repositories/Organization';
 import TextInput from './../components/TextInput';
@@ -567,6 +568,49 @@ function UserDataRow(props: {
   );
 }
 
+function VerifiedDomainSetting() {
+  const { currentOrganization } = useContext(OrganizationContext);
+  const { currentUser } = useContext(AuthContext);
+  const [domainVerify, setDomainVerify] = useState<boolean>(false);
+  useEffect(() => {
+    setDomainVerify(!!currentOrganization?.data()?.domain);
+  }, [currentOrganization]);
+  const inputId: string = Math.random().toString();
+  function changeVerifyEnabled(value: boolean) {
+    setDomainVerify(value);
+  }
+
+  return (
+    <div className=" my-5">
+      <Heading level={2}>ドメイン認証</Heading>
+      <p className="mt-1">
+        {currentUser?.email.replace(/.+@/gm, '')}
+        のユーザーのみを許可します（既に許可されたユーザーは削除されません）
+      </p>
+      <form className="mt-1 w-60 flex justify-between items-center">
+        <label htmlFor={inputId}>ドメイン認証を有効にする</label>
+        <input
+          type="checkbox"
+          className="text-blue-400"
+          id={inputId}
+          checked={domainVerify}
+          onChange={() => {
+            console.info(
+              domainVerify ? '' : currentUser?.email.replace(/.+@/gm, '')
+            );
+            SetDomainVerification(
+              domainVerify ? '' : currentUser?.email.replace(/.+@/gm, ''),
+              currentOrganization.id
+            ).then(() => {
+              changeVerifyEnabled(!domainVerify);
+            });
+          }}
+        />
+      </form>
+    </div>
+  );
+}
+
 export default function organization_setting() {
   return (
     <User_layout>
@@ -576,6 +620,7 @@ export default function organization_setting() {
           <Name_setting />
           <InviteLink />
           <UsersList />
+          <VerifiedDomainSetting />
         </div>
       </section>
     </User_layout>

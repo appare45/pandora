@@ -36,6 +36,7 @@ import {
 } from '@firebase/firestore-types';
 import firebase from '../utils/firebase';
 import Heading from '../components/Heading';
+import Table from '../components/Table';
 
 function Name_setting(): JSX.Element {
   const { currentOrganization } = useContext(OrganizationContext);
@@ -87,7 +88,7 @@ function Name_setting(): JSX.Element {
         />
         {nameEdit && (
           <>
-            <div className="flex my-1 md:my-0 md:mx-0.5">
+            <div className="flex md:mx-0.5">
               <div className="mx-0.5 w-full">
                 <ActionButton
                   type="submit"
@@ -342,7 +343,7 @@ function InviteLink() {
       {curretnOrganizationUser?.role === 'host' && (
         <div className="my-5">
           <div className="flex">
-            <h2 className="text-lg font-medium break-normal flex-1 w-full whitespace-nowrap">
+            <h2 className="text-lg font-medium flex-1 w-full whitespace-nowrap">
               招待リンク
             </h2>
             <div>
@@ -369,7 +370,7 @@ function InviteLink() {
           {!currentInvites?.length ? (
             <p className="text-center">作成されたリンクはありません</p>
           ) : (
-            <table className="table-auto w-full mt-4">
+            <Table>
               <thead>
                 <tr>
                   <th className="px-2">権限</th>
@@ -384,7 +385,7 @@ function InviteLink() {
                   <InviteDataTable invite={invite} key={invite.id} />
                 ))}
               </tbody>
-            </table>
+            </Table>
           )}
         </div>
       )}
@@ -410,10 +411,14 @@ function InviteDataTable(props: { invite: DocumentReference<Invite> }) {
                 {roleTextConverter(props.inviteData.role)}
               </td>
               <td className="px-2">
-                {new Date(props.inviteData.created.toMillis()).toLocaleString()}
+                {new Date(
+                  props.inviteData.created.toMillis()
+                ).toLocaleDateString()}
               </td>
               <td className="px-2">
-                {new Date(props.inviteData.endAt.toMillis()).toLocaleString()}
+                {new Date(
+                  props.inviteData.endAt.toMillis()
+                ).toLocaleDateString()}
               </td>
               <td className="flex p-1 justify-center">
                 <ActionButton
@@ -502,7 +507,7 @@ function UsersList() {
       {!currentUsers?.length ? (
         <p>ユーザーが見つかりませんでした</p>
       ) : (
-        <table className="table-auto w-full">
+        <Table>
           <thead>
             <tr>
               <th>氏名</th>
@@ -519,7 +524,7 @@ function UsersList() {
               />
             ))}
           </tbody>
-        </table>
+        </Table>
       )}
     </>
   );
@@ -587,17 +592,12 @@ function VerifiedDomainSetting() {
         {currentUser?.email.replace(/.+@/gm, '')}
         のユーザーのみを許可します（既に許可されたユーザーは削除されません）
       </p>
-      <form className="mt-1 w-60 flex justify-between items-center">
-        <label htmlFor={inputId}>ドメイン認証を有効にする</label>
+      <form className="mt-1 flex mx-3 my-1 items-center">
         <input
           type="checkbox"
-          className="text-blue-400"
           id={inputId}
           checked={domainVerify}
           onChange={() => {
-            console.info(
-              domainVerify ? '' : currentUser?.email.replace(/.+@/gm, '')
-            );
             SetDomainVerification(
               domainVerify ? '' : currentUser?.email.replace(/.+@/gm, ''),
               currentOrganization.id
@@ -606,6 +606,7 @@ function VerifiedDomainSetting() {
             });
           }}
         />
+        <label htmlFor={inputId}>ドメイン認証を有効にする</label>
       </form>
     </div>
   );
@@ -616,7 +617,7 @@ export default function organization_setting() {
     <User_layout>
       <section className="m-10">
         <Heading level={1}>設定</Heading>
-        <div className="md:px-3 px-0.5 py-2 max-w-3xl">
+        <div className="md:px-3 px-0.5 py-2 max-w-screen-md md:max-w-3xl">
           <Name_setting />
           <InviteLink />
           <UsersList />

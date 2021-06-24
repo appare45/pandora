@@ -16,18 +16,20 @@ export default function TextInput(props: {
       {!!props?.label && (
         <label htmlFor={id} className="text-xs text-gray-500">
           {props.label}
-          {props.editable && (!!props?.max || !!props?.min) && (
-            <span
-              className={
-                (!!props?.max && ref.current.value.length > props?.max) ||
-                (!!props?.min && ref.current.value.length < props?.min)
-                  ? 'text-red-400'
-                  : undefined
-              }
-            >
-              （{ref.current.value.length}/{props?.max}）
-            </span>
-          )}
+          {props.editable &&
+            (!!props?.max || !!props?.min) &&
+            ref.current?.value !== undefined && (
+              <span
+                className={
+                  (!!props?.max && ref.current?.value.length > props?.max) ||
+                  (!!props?.min && ref.current?.value.length < props?.min)
+                    ? 'text-red-400'
+                    : undefined
+                }
+              >
+                （{ref.current?.value.length}/{props?.max}）
+              </span>
+            )}
         </label>
       )}
       <div className="relative">
@@ -37,7 +39,7 @@ export default function TextInput(props: {
           value={props.value}
           maxLength={props?.max}
           minLength={props?.min}
-          className="p-0.5 bg-transparent border-b-2 w-full bg-white"
+          className="w-full bg-white"
           disabled={!props.editable}
           ref={ref}
           onChange={() => {
@@ -47,7 +49,7 @@ export default function TextInput(props: {
         />
         {!props.editable && (
           <button
-            className="absolute right-0 bottom-0 w-7 h-7 p-1 text-gray-500"
+            className="absolute right-0 bottom-0 h-full w-10 p-2 text-gray-500"
             onClick={(e) => {
               e.preventDefault();
               props?.edit(ref);

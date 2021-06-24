@@ -1,3 +1,11 @@
+import {
+  CollectionReference,
+  DocumentData,
+  FieldValue,
+  FirestoreDataConverter,
+  QueryDocumentSnapshot,
+  SnapshotOptions,
+} from '@firebase/firestore-types';
 import firebase from 'firebase';
 export type role = 'member' | 'host' | 'committee' | 'teacher';
 
@@ -5,7 +13,7 @@ export interface OrgUser {
   name?: string;
   joinedEvents?: string[];
   role?: role;
-  lastLogin?: firebase.firestore.FieldValue;
+  lastLogin?: FieldValue;
 }
 
 export interface MediaData {
@@ -14,9 +22,9 @@ export interface MediaData {
   onFace?: boolean;
   checked: null | 'committee' | 'teacher';
   committeeComment: string;
-  committee: firebase.firestore.CollectionReference<OrgUser>;
+  committee: CollectionReference<OrgUser>;
   teacherComment: string;
-  teacher: firebase.firestore.CollectionReference<OrgUser>;
+  teacher: CollectionReference<OrgUser>;
 }
 
 export interface EventArticleData {
@@ -32,21 +40,21 @@ export interface EventData {
 
 export interface OrgData {
   name?: string;
-  user?: firebase.firestore.CollectionReference<OrgUser>;
-  event?: firebase.firestore.CollectionReference<OrgUser>;
+  user?: CollectionReference<OrgUser>;
+  event?: CollectionReference<OrgUser>;
   domain?: string;
   disabledUsersIds?: string[];
 }
 
-export const organizationDataConverter: firebase.firestore.FirestoreDataConverter<OrgData> = {
-  toFirestore(organization: OrgData): firebase.firestore.DocumentData {
+export const organizationDataConverter: FirestoreDataConverter<OrgData> = {
+  toFirestore(organization: OrgData): DocumentData {
     return {
       organization,
     };
   },
   fromFirestore(
-    snapshot: firebase.firestore.QueryDocumentSnapshot,
-    options?: firebase.firestore.SnapshotOptions
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
   ): Readonly<OrgData> {
     const data = snapshot.data(options)!;
     return {
@@ -59,8 +67,8 @@ export const organizationDataConverter: firebase.firestore.FirestoreDataConverte
   },
 };
 
-export const organizationUserDataConverter: firebase.firestore.FirestoreDataConverter<OrgUser> = {
-  toFirestore(organizationUser: OrgUser): firebase.firestore.DocumentData {
+export const organizationUserDataConverter: FirestoreDataConverter<OrgUser> = {
+  toFirestore(organizationUser: OrgUser): DocumentData {
     if (!!organizationUser) {
       return {
         name: !organizationUser?.name ? organizationUser.name : '',
@@ -72,8 +80,8 @@ export const organizationUserDataConverter: firebase.firestore.FirestoreDataConv
     }
   },
   fromFirestore(
-    snapshot: firebase.firestore.QueryDocumentSnapshot,
-    options?: firebase.firestore.SnapshotOptions
+    snapshot: QueryDocumentSnapshot,
+    options?: SnapshotOptions
   ): Readonly<OrgUser> {
     const data = snapshot.data(options)!;
     return {

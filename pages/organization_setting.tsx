@@ -37,6 +37,7 @@ import {
 import firebase from '../utils/firebase';
 import Heading from '../components/Heading';
 import Table from '../components/Table';
+import { Section } from '../components/Section';
 
 function Name_setting(): JSX.Element {
   const { currentOrganization } = useContext(OrganizationContext);
@@ -267,7 +268,9 @@ function CreateInvite() {
           >
             <div className="flex mb-1">
               <div className="mx-1">
-                <label htmlFor="roleSetting">権限</label>
+                <label htmlFor="roleSetting" className="text-gray-700 mx-2">
+                  権限
+                </label>
                 <select
                   name="role"
                   id="roleSetting"
@@ -283,7 +286,9 @@ function CreateInvite() {
                 </select>
               </div>
               <div className="mx-1">
-                <label htmlFor="limit">有効期限</label>
+                <label htmlFor="limit" className="text-gray-700 mx-2">
+                  有効期限
+                </label>
                 <input
                   type="date"
                   required
@@ -309,7 +314,7 @@ function CreateInvite() {
                 />
               </div>
             </div>
-            <div>
+            <div className="h-full mt-5 md:m-0">
               <ActionButton enabled action={(e) => create(e)}>
                 作成
               </ActionButton>
@@ -341,7 +346,7 @@ function InviteLink() {
   return (
     <>
       {curretnOrganizationUser?.role === 'host' && (
-        <div className="my-5">
+        <Section>
           <div className="flex">
             <h2 className="text-lg font-medium flex-1 w-full whitespace-nowrap">
               招待リンク
@@ -387,7 +392,7 @@ function InviteLink() {
               </tbody>
             </Table>
           )}
-        </div>
+        </Section>
       )}
     </>
   );
@@ -502,7 +507,7 @@ function UsersList() {
     }
   }, [!currentOrganization?.data().disabledUsersIds]);
   return (
-    <>
+    <Section>
       <Heading level={2}>ユーザー</Heading>
       {!currentUsers?.length ? (
         <p>ユーザーが見つかりませんでした</p>
@@ -526,7 +531,7 @@ function UsersList() {
           </tbody>
         </Table>
       )}
-    </>
+    </Section>
   );
 }
 

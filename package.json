@@ -17,7 +17,7 @@
   "devDependencies": {
     "@firebase/firestore-types": "^2.2.0",
     "@tailwindcss/typography": "^0.4.0",
-    "@types/node": "^14.14.38",
+    "@types/node": "^16.7.13",
     "@types/react": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
